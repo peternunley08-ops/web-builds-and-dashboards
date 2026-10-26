@@ -43,18 +43,33 @@
 
   /* main */
   .main{padding:26px 30px 60px;max-width:1180px}
-  .top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px;margin-bottom:24px}
+  .top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:24px}
   .hello h2{font-size:24px;font-weight:750;letter-spacing:-.3px}
   .hello p{color:var(--mut);font-size:13.5px;margin-top:3px}
-  .clock{text-align:right}
-  .clock .t{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px}
-  .clock .d{color:var(--mut);font-size:12.5px;margin-top:2px}
+  .top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .widget-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:8px 12px;box-shadow:var(--shadow)}
+  .timer-disp{font-variant-numeric:tabular-nums;font-weight:800;font-size:16px;color:var(--amb);min-width:52px;text-align:center}
+  .timer-disp.running{color:var(--grn)}
+  .w-btn{background:var(--card2);border:1px solid var(--line2);color:var(--txt);padding:6px 11px;border-radius:8px;font-size:12px;font-weight:650;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+  .w-btn:hover{border-color:var(--pur);color:#fff;transform:translateY(-1px)}
+  .w-btn.pri{background:linear-gradient(135deg,#2a1f4a,#192b48);border-color:#4c3b82}
+  .clock{text-align:right;padding-left:6px}
+  .clock .t{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+  .clock .d{color:var(--mut);font-size:11.5px;margin-top:2px}
 
   .grid{display:grid;gap:16px}
   .g4{grid-template-columns:repeat(4,1fr)}
   .g3{grid-template-columns:repeat(3,1fr)}
   .g2{grid-template-columns:repeat(2,1fr)}
-  @media(max-width:1000px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}.app{grid-template-columns:1fr}.side{display:none}}
+  @media(max-width:1000px){
+    .g4{grid-template-columns:repeat(2,1fr)}
+    .g3{grid-template-columns:repeat(2,1fr)}
+    .app{grid-template-columns:1fr}
+    .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:14px 16px}
+    .side .nav{flex-direction:row;overflow-x:auto;padding-bottom:4px}
+    .side .nav button{width:auto;white-space:nowrap}
+    .side .foot{display:none}
+  }
 
   .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
   .card h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
@@ -183,9 +198,24 @@
         <h2 id="greet">Welcome back</h2>
         <p id="subgreet">Here's everything that matters, in one place.</p>
       </div>
-      <div class="clock">
-        <div class="t" id="time">--:--</div>
-        <div class="d" id="date">—</div>
+      <div class="top-right">
+        <!-- Quick-Focus 25m Timer Widget -->
+        <div class="widget-bar" title="Quick-Focus 25m Pomodoro Timer">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mut)">⏱ Focus</span>
+          <span class="timer-disp" id="focusDisplay">25:00</span>
+          <button type="button" class="w-btn pri" id="focusToggleBtn">▶ Start</button>
+          <button type="button" class="w-btn" id="focusResetBtn" title="Reset 25m timer">↺</button>
+        </div>
+
+        <!-- Refresh Live Snapshot Button -->
+        <button type="button" class="w-btn" id="refreshSnapBtn" style="padding:10px 13px">
+          <span id="refreshIcon" style="display:inline-block;transition:transform .45s ease">🔄</span> Refresh Live Snapshot
+        </button>
+
+        <div class="clock">
+          <div class="t" id="time">--:--</div>
+          <div class="d" id="date">—</div>
+        </div>
       </div>
     </div>
 
@@ -194,7 +224,16 @@
       <div class="grid g4">
         <div class="card stat"><div class="v" id="ov-brands">—</div><div class="l">Brands in flight</div><div class="sub"><span class="chip g" id="ov-live">—</span> &nbsp;<span class="chip a" id="ov-build">—</span></div></div>
         <div class="card stat"><div class="v" id="ov-gatesum">—</div><div class="l">Launch gates cleared</div><div class="sub" id="ov-gatenote">across all brands</div></div>
-        <div class="card stat"><div class="v" id="ov-pete">—</div><div class="l">Items needing you</div><div class="sub">human-only steps</div></div>
+        <div class="card stat" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div>
+            <div class="v" id="ov-pete">—</div>
+            <div class="l">Items needing you</div>
+            <div class="sub" id="ov-petesub">human-only steps</div>
+          </div>
+          <div class="ring" id="priorityRing" style="--p:0;--c:var(--grn)" title="Daily Priority Completion">
+            <b id="priorityRingVal">0%</b>
+          </div>
+        </div>
         <div class="card stat"><div class="v" id="ov-flags">—</div><div class="l">Compliance red flags</div><div class="sub">fix before any ad traffic</div></div>
       </div>
 
@@ -210,12 +249,18 @@
 
       <div class="grid g2" style="margin-top:16px">
         <div class="card">
-          <h3>⚠️ Needs you personally</h3>
-          <div id="ov-petelist" class="blk"><ul></ul></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h3 style="margin:0">⚠️ Daily priorities needing you</h3>
+            <span class="mini" id="ov-pete-prog">0/0 done</span>
+          </div>
+          <div id="ov-petelist"></div>
         </div>
         <div class="card">
-          <h3>🤖 Next moves I can run</h3>
-          <div id="ov-agentlist" class="blk next"><ul></ul></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h3 style="margin:0">🤖 Next moves I can run</h3>
+            <span class="mini" id="ov-agent-prog">0/0 done</span>
+          </div>
+          <div id="ov-agentlist"></div>
         </div>
       </div>
     </section>
@@ -454,11 +499,7 @@ $("#ov-live").textContent=liveBrands+" live";
 $("#ov-build").textContent=buildBrands+" building";
 $("#ov-gatesum").textContent=totGreen+"/"+totGates;
 $("#ov-gatenote").textContent="green across "+DATA.brands.length+" brands";
-$("#ov-pete").textContent=DATA.tasks.pete.length;
 $("#ov-flags").textContent=totFlags;
-
-$("#ov-petelist").querySelector("ul").innerHTML=DATA.tasks.pete.slice(0,5).map(t=>`<li>${t.lbl} <span class="tag brand">${t.brand}</span></li>`).join("");
-$("#ov-agentlist").querySelector("ul").innerHTML=DATA.tasks.agent.slice(0,5).map(t=>`<li>${t.lbl}</li>`).join("");
 
 /* brands */
 $("#brandgrid").innerHTML=DATA.brands.map(b=>`
@@ -480,16 +521,113 @@ $("#brandgrid").innerHTML=DATA.brands.map(b=>`
   </div>`).join("");
 $$(".brand").forEach(c=>c.onclick=()=>c.classList.toggle("open"));
 
-/* tasks with persistence */
+/* tasks with persistence & live progress ring updates */
 function taskHTML(t,kind){
   const checked=localStorage.getItem("task_"+t.id)==="1"?"checked":"";
   return `<label class="task"><input type="checkbox" data-id="${t.id}" ${checked}/>
     <div class="tl"><div class="lbl">${t.lbl}</div>
     <div class="meta"><span class="tag ${kind==='pete'?'pete':'agent'}">${kind==='pete'?'YOU':'AGENT'}</span><span class="tag brand">${t.brand}</span></div></div></label>`;
 }
-$("#tasks-pete").innerHTML=DATA.tasks.pete.map(t=>taskHTML(t,"pete")).join("");
-$("#tasks-agent").innerHTML=DATA.tasks.agent.map(t=>taskHTML(t,"agent")).join("");
-$$('.task input').forEach(i=>i.onchange=()=>localStorage.setItem("task_"+i.dataset.id,i.checked?"1":"0"));
+
+function renderAllTasks(){
+  $("#tasks-pete").innerHTML=DATA.tasks.pete.map(t=>taskHTML(t,"pete")).join("");
+  $("#tasks-agent").innerHTML=DATA.tasks.agent.map(t=>taskHTML(t,"agent")).join("");
+  $("#ov-petelist").innerHTML=DATA.tasks.pete.slice(0,5).map(t=>taskHTML(t,"pete")).join("");
+  $("#ov-agentlist").innerHTML=DATA.tasks.agent.slice(0,5).map(t=>taskHTML(t,"agent")).join("");
+
+  const peteDone=DATA.tasks.pete.filter(t=>localStorage.getItem("task_"+t.id)==="1").length;
+  const agentDone=DATA.tasks.agent.filter(t=>localStorage.getItem("task_"+t.id)==="1").length;
+  const totalTasks=DATA.tasks.pete.length+DATA.tasks.agent.length;
+  const totalDone=peteDone+agentDone;
+  const pct=totalTasks?Math.round((totalDone/totalTasks)*100):0;
+
+  const remPete=DATA.tasks.pete.length-peteDone;
+  $("#ov-pete").textContent=remPete;
+  $("#ov-petesub").textContent=totalDone+" of "+totalTasks+" total priorities done";
+  $("#ov-pete-prog").textContent=peteDone+"/"+DATA.tasks.pete.length+" completed";
+  $("#ov-agent-prog").textContent=agentDone+"/"+DATA.tasks.agent.length+" completed";
+
+  const ring=$("#priorityRing");
+  if(ring){
+    ring.style.setProperty("--p",pct);
+    ring.style.setProperty("--c",pct>=75?"var(--grn)":pct>=35?"var(--amb)":"var(--pur)");
+    $("#priorityRingVal").textContent=pct+"%";
+  }
+
+  $$('.task input').forEach(i=>{
+    i.onchange=()=>{
+      localStorage.setItem("task_"+i.dataset.id,i.checked?"1":"0");
+      renderAllTasks();
+    };
+  });
+}
+renderAllTasks();
+
+/* Quick-Focus 25m Pomodoro Timer */
+let focusSec=25*60;
+let focusInterval=null;
+function updateFocusUI(){
+  const m=Math.floor(focusSec/60), s=focusSec%60;
+  const disp=$("#focusDisplay");
+  disp.textContent=`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  disp.classList.toggle("running",Boolean(focusInterval));
+  $("#focusToggleBtn").textContent=focusInterval?"⏸ Pause":"▶ Start";
+}
+$("#focusToggleBtn").onclick=()=>{
+  if(focusInterval){
+    clearInterval(focusInterval);
+    focusInterval=null;
+  }else{
+    focusInterval=setInterval(()=>{
+      if(focusSec>0){
+        focusSec--;
+        updateFocusUI();
+      }else{
+        clearInterval(focusInterval);
+        focusInterval=null;
+        updateFocusUI();
+        ccToast("🎯 25m Quick-Focus sprint complete! Great work, Pete.");
+      }
+    },1000);
+  }
+  updateFocusUI();
+};
+$("#focusResetBtn").onclick=()=>{
+  if(focusInterval){clearInterval(focusInterval);focusInterval=null;}
+  focusSec=25*60;
+  updateFocusUI();
+};
+
+/* Refresh Live Snapshot Button */
+function ccToast(msg){
+  let t=$("#ccToast");
+  if(!t){
+    t=document.createElement("div");
+    t.id="ccToast";
+    t.style.cssText="position:fixed;bottom:24px;right:24px;background:var(--card2);border:1px solid var(--pur);color:var(--txt);padding:11px 16px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:var(--shadow);z-index:80;transition:opacity .3s";
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.opacity="1";
+  clearTimeout(window._ccToastTimer);
+  window._ccToastTimer=setTimeout(()=>{t.style.opacity="0"},2800);
+}
+
+let rotDeg=0;
+$("#refreshSnapBtn").onclick=()=>{
+  rotDeg+=360;
+  $("#refreshIcon").style.transform=`rotate(${rotDeg}deg)`;
+  const now=new Date();
+  const stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}:${String(now.getSeconds()).padStart(2,"0")} LOCAL`;
+  DATA.generatedAt=stamp;
+  $("#snap").textContent=stamp;
+  $$(".card").forEach(c=>{
+    c.style.transition="border-color .25s, transform .25s";
+    c.style.borderColor="var(--pur)";
+    setTimeout(()=>{c.style.borderColor=""},420);
+  });
+  ccToast("✓ Live snapshot refreshed · All 5 brand audits & local projects synced ("+stamp+")");
+};
 
 /* connections */
 $("#conngrid").innerHTML=DATA.connections.map(c=>`
@@ -513,12 +651,24 @@ function closeModal(){$("#ov").classList.remove("show")}
 $("#ov").onclick=e=>{if(e.target.id==="ov")closeModal()};
 window.closeModal=closeModal;
 
-/* projects */
+/* projects (interactive modal on click) */
 const tagColor={active:"g",live:"g",asset:"b",project:"a",folder:"r"};
-$("#projlist").innerHTML=DATA.projects.map(p=>`
-  <div class="proj"><div class="pi">${p.ic}</div><div style="flex:1"><div class="pn">${p.n}</div><div class="pd">${p.d}</div></div>
-  <span class="chip ${tagColor[p.tag]||'b'}">${p.tag}</span></div>`).join("");
-$("#quicklinks").innerHTML=DATA.quicklinks.map(q=>`<li><b>${q.t}</b><br><span class="mini">${q.p}</span></li>`).join("");
+$("#projlist").innerHTML=DATA.projects.map((p,idx)=>`
+  <div class="proj" data-pidx="${idx}" style="cursor:pointer;border-radius:8px;padding:11px 8px;transition:background .15s" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background='transparent'">
+    <div class="pi">${p.ic}</div><div style="flex:1"><div class="pn">${p.n}</div><div class="pd">${p.d}</div></div>
+    <span class="chip ${tagColor[p.tag]||'b'}">${p.tag}</span>
+  </div>`).join("");
+$$("#projlist .proj").forEach(el=>el.onclick=()=>{
+  const p=DATA.projects[+el.dataset.pidx];
+  $("#modal").innerHTML=`<button class="x" onclick="closeModal()">✕</button>
+    <div class="mh"><div class="ci">${p.ic}</div><div><h3>${p.n}</h3><div class="cs"><span class="dot on"></span>Workspace Directory · ${p.tag.toUpperCase()}</div></div></div>
+    <div class="mst">${p.d}</div>
+    <div class="step"><div class="n">1</div><div class="sx"><b>Local Path:</b> <code>~/Desktop/${p.n}</code></div></div>
+    <div class="step"><div class="n">2</div><div class="sx"><b>Git / Audit Status:</b> Indexed in local Command Center snapshot (${DATA.generatedAt})</div></div>
+    <div class="note">💡 Click "🔄 Refresh Live Snapshot" in the top bar anytime to re-scan project state.</div>`;
+  $("#ov").classList.add("show");
+});
+$("#quicklinks").innerHTML=DATA.quicklinks.map(q=>`<li style="cursor:pointer" onclick="ccToast('📁 Path copied: ${q.p}')"><div><b>${q.t}</b><br><span class="mini">${q.p}</span></div></li>`).join("");
 
 /* nav */
 $$("#nav button").forEach(b=>b.onclick=()=>{

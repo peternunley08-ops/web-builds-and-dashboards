@@ -224,6 +224,48 @@
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.frame{rotate:0}}
+
+  /* ---------- Interactive AI Portrait Studio ---------- */
+  .studio-box{margin-top:52px;background:var(--cream);border:1.5px solid var(--line);border-radius:14px;padding:32px;box-shadow:var(--shadow);display:grid;grid-template-columns:1.05fr .95fr;gap:42px;align-items:center}
+  .studio-controls h3{font-size:28px;margin:8px 0 10px}
+  .studio-controls p.sub{font-size:14.5px;color:var(--ink-2);margin-bottom:20px}
+  .ctrl-group{margin-bottom:18px}
+  .ctrl-lbl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px;font-weight:600}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap}
+  .st-btn{font-family:var(--sans);font-size:13px;font-weight:600;padding:9px 14px;border-radius:9px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:6px}
+  .st-btn:hover{border-color:var(--amber)}
+  .st-btn.active{border-color:var(--amber);background:#fbf2e8;color:var(--amber);box-shadow:0 0 0 1px var(--amber) inset}
+  .plaque-inp{width:100%;max-width:300px;font-family:var(--serif);font-size:16px;padding:9px 13px;border:1.5px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .plaque-inp:focus{outline:none;border-color:var(--amber)}
+  .studio-stage{display:flex;flex-direction:column;align-items:center}
+  .live-frame{position:relative;width:100%;max-width:360px;padding:20px;border-radius:6px;transition:all .35s ease;box-shadow:0 26px 60px -24px rgba(33,27,21,.55)}
+  .live-frame.finish-oak{background:#d7b38c;border:8px solid #8c5c32;box-shadow:inset 0 0 0 2px #5e3b1e, 0 26px 60px -24px rgba(33,27,21,.55)}
+  .live-frame.finish-black{background:#f9f6f0;border:10px solid #1b1611;box-shadow:inset 0 0 0 1px #433a31, 0 26px 60px -24px rgba(33,27,21,.65)}
+  .live-frame.finish-gold{background:#fcf9f2;border:9px solid #b8923f;box-shadow:inset 0 0 0 2px #876621, 0 26px 60px -24px rgba(33,27,21,.55)}
+  .live-frame.finish-canvas{background:#fffdf8;padding:8px;border:1px solid var(--line)}
+  .live-mat{background:#fffdf8;padding:12px;border:1px solid rgba(0,0,0,.1);position:relative;overflow:hidden}
+  .live-art-wrap{position:relative;aspect-ratio:3/4;overflow:hidden;border-radius:2px;background:#1b1611}
+  .live-art-wrap img{width:100%;height:100%;object-fit:cover;transition:filter .35s ease,transform .35s ease}
+  .live-art-wrap.style-oil img{filter:contrast(1.12) saturate(1.18) sepia(.18) brightness(.97)}
+  .live-art-wrap.style-pop img{filter:contrast(1.38) saturate(1.75) hue-rotate(-8deg)}
+  .live-art-wrap.style-flat img{filter:contrast(1.06) saturate(1.1) brightness(1.03)}
+  .live-style-badge{position:absolute;top:10px;right:10px;background:rgba(27,22,17,.84);color:var(--bone);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;border-radius:999px;backdrop-filter:blur(4px)}
+  .live-plaque{margin-top:12px;text-align:center;background:var(--oil);color:var(--gold);font-family:var(--serif);font-size:15px;letter-spacing:.06em;padding:7px 16px;border-radius:4px;border:1px solid rgba(184,146,63,.45)}
+  @media(max-width:880px){.studio-box{grid-template-columns:1fr;padding:22px}}
+
+  /* ---------- Serverless Pipeline Visualizer ---------- */
+  .pipeline-card{background:var(--cream);border:1.5px solid var(--line);border-radius:14px;padding:26px;box-shadow:var(--shadow)}
+  .pipe-steps{margin:16px 0;display:grid;gap:10px}
+  .pipe-step{display:flex;align-items:center;gap:12px;padding:10px 13px;border-radius:9px;background:var(--bone);border:1px solid var(--line);font-size:13.5px;color:var(--ink-2);transition:.25s}
+  .pipe-step.active{border-color:var(--amber);background:#fbf2e8;color:var(--ink);font-weight:600}
+  .pipe-step.done{border-color:#bfd4b0;background:#eef5e8;color:#2f4720}
+  .pipe-ico{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:#fff;border:1px solid var(--line);flex:none}
+  .pipe-step.done .pipe-ico{background:var(--olive);color:#fff;border-color:var(--olive)}
+  .pipe-step.active .pipe-ico{background:var(--amber);color:#fff;border-color:var(--amber)}
+  .ticket-box{margin-top:18px;padding:16px;border-radius:10px;background:#1b1611;color:var(--bone);font-family:var(--mono);font-size:12px;line-height:1.55;overflow-x:auto}
+  .ticket-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid rgba(255,253,248,.16);color:var(--gold);font-weight:700}
+  .proof-result{margin-top:16px;display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center;background:#fff;padding:14px;border-radius:10px;border:1px solid var(--line)}
+  .proof-result img{width:110px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -294,13 +336,13 @@
         <article class="card reveal">
           <div class="art"><img src="assets/sample-oil.jpg" alt="Vintage Oil pet portrait"></div>
           <div class="meta">The Heirloom</div>
-          <h3>Vintage Oil</h3>
+          <h3>Royal / Vintage Oil</h3>
           <p>Old-Masters warmth — impasto brushwork, candlelit glow, framed like a portrait in a country house.</p>
         </article>
         <article class="card reveal" style="transition-delay:.08s">
           <div class="art"><img src="assets/sample-pop.jpg" alt="Pop-Art pet portrait"></div>
           <div class="meta">The Statement</div>
-          <h3>Pop-Art</h3>
+          <h3>Pop Art</h3>
           <p>Bold, joyful, unmistakable — flat colour, halftone dots and a CMYK punch worthy of a gallery wall.</p>
         </article>
         <article class="card reveal" style="transition-delay:.16s">
@@ -309,6 +351,67 @@
           <h3>Modern Flat</h3>
           <p>Clean, contemporary and calm — minimal shapes and a designer palette that suits any room.</p>
         </article>
+      </div>
+
+      <!-- INTERACTIVE AI PORTRAIT STUDIO / LIVE PREVIEW -->
+      <div class="studio-box reveal" id="studio">
+        <div class="studio-controls">
+          <p class="eyebrow">Interactive AI Portrait Studio · Live Preview</p>
+          <h3>Test-drive your pet's portrait</h3>
+          <p class="sub">Pick a sample model (or upload your own pet photo), switch between our three signature art styles, customize the frame finish &amp; brass plaque, and send your configuration straight to the order desk.</p>
+
+          <div class="ctrl-group">
+            <span class="ctrl-lbl">1. Select Sample Pet (or upload your own)</span>
+            <div class="pill-row" id="studioPetRow">
+              <button type="button" class="st-btn active" data-pet="luna" data-name="Duchess Luna" data-src="assets/sample-oil.jpg">🐱 Luna (Bengal)</button>
+              <button type="button" class="st-btn" data-pet="barnaby" data-name="Sir Barnaby" data-src="assets/sample-pop.jpg">🐶 Barnaby (Terrier Mix)</button>
+              <button type="button" class="st-btn" data-pet="mochi" data-name="Lord Mochi" data-src="assets/sample-flat.jpg">🐾 Mochi (Bulldog)</button>
+              <button type="button" class="st-btn" id="studioUploadBtn">📷 Upload My Pet…</button>
+            </div>
+          </div>
+
+          <div class="ctrl-group">
+            <span class="ctrl-lbl">2. Art Direction / Style</span>
+            <div class="pill-row" id="studioStyleRow">
+              <button type="button" class="st-btn active" data-style="Royal Oil" data-css="style-oil" data-img="assets/sample-oil.jpg">🎨 Royal Oil</button>
+              <button type="button" class="st-btn" data-style="Pop Art" data-css="style-pop" data-img="assets/sample-pop.jpg">⚡ Pop Art</button>
+              <button type="button" class="st-btn" data-style="Modern Flat" data-css="style-flat" data-img="assets/sample-flat.jpg">✨ Modern Flat</button>
+            </div>
+          </div>
+
+          <div class="ctrl-group">
+            <span class="ctrl-lbl">3. Frame &amp; Finish</span>
+            <div class="pill-row" id="studioFrameRow">
+              <button type="button" class="st-btn active" data-finish="finish-gold" data-label="Heirloom Gold">🏛️ Heirloom Gold</button>
+              <button type="button" class="st-btn" data-finish="finish-oak" data-label="Natural Oak">🪵 Natural Oak</button>
+              <button type="button" class="st-btn" data-finish="finish-black" data-label="Museum Black">⬛ Museum Black</button>
+              <button type="button" class="st-btn" data-finish="finish-canvas" data-label="Gallery Canvas">🖼️ Gallery Canvas</button>
+            </div>
+          </div>
+
+          <div class="ctrl-group">
+            <label class="ctrl-lbl" for="studioPlaqueInput">4. Custom Brass Plaque Engraving</label>
+            <input id="studioPlaqueInput" class="plaque-inp" type="text" value="Duchess Luna" maxlength="34" placeholder="e.g. Sir Barnaby">
+          </div>
+
+          <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+            <a href="#order" class="btn primary" id="applyStudioToOrderBtn">Order This Exact Portrait ↓</a>
+            <span style="font-size:12.5px;color:var(--ink-2)">Free proof before you pay</span>
+          </div>
+        </div>
+
+        <div class="studio-stage">
+          <div class="live-frame finish-gold" id="liveFrame">
+            <div class="live-mat">
+              <div class="live-art-wrap style-oil" id="liveArtWrap">
+                <img id="livePreviewImg" src="assets/sample-oil.jpg" alt="Interactive Pet Portrait Preview">
+                <span class="live-style-badge" id="liveStyleBadge">Royal Oil · Heirloom Gold</span>
+              </div>
+              <div class="live-plaque" id="livePlaqueText">“Duchess Luna”</div>
+            </div>
+          </div>
+          <p style="font-family:var(--mono);font-size:11px;color:var(--ink-2);margin-top:14px;letter-spacing:.08em;text-transform:uppercase">✦ Live Studio Render · 300 DPI Archival Spec</p>
+        </div>
       </div>
     </div>
   </section>
@@ -391,42 +494,102 @@
         <div class="chk"><span class="tick">✓</span><div><b>24–48h turnaround</b> for your first proof.</div></div>
         <div class="chk"><span class="tick">✓</span><div><b>Unlimited little tweaks</b> until it's right.</div></div>
         <div class="chk"><span class="tick">✓</span><div><b>Happiness guarantee</b> — love it or owe nothing.</div></div>
+        <div style="margin-top:22px;padding:14px 16px;background:var(--cream);border:1px solid var(--line);border-radius:10px;font-size:13px;color:var(--ink-2)">
+          <b style="color:var(--ink)">✨ Testing on GitHub Pages?</b><br>
+          Click <b>“⚡ Fill Sample Order”</b> on the form to watch our serverless Google Drive + Sheets + Gemini Vision AI proof pipeline run live in your browser!
+        </div>
       </div>
-      <form class="np reveal" id="orderForm" novalidate>
-        <div class="fld">
-          <label for="cn">Your name</label>
-          <input id="cn" name="customer_name" placeholder="Maria Gonzalez" autocomplete="name">
-        </div>
-        <div class="fld">
-          <label for="ce">Email <span style="color:var(--amber)">*</span></label>
-          <input id="ce" name="customer_email" type="email" required placeholder="you@example.com" autocomplete="email">
-        </div>
-        <div class="fld">
-          <label for="pn">Pet's name <span style="color:var(--amber)">*</span></label>
-          <input id="pn" name="pet_name" required placeholder="Luna">
-        </div>
-        <div class="fld">
-          <label>Choose a style <span style="color:var(--amber)">*</span></label>
-          <div class="styles-pick">
-            <label><input type="radio" name="selected_style" value="Vintage Oil" checked><span>Vintage Oil</span></label>
-            <label><input type="radio" name="selected_style" value="Pop-Art"><span>Pop-Art</span></label>
-            <label><input type="radio" name="selected_style" value="Flat-Illustration"><span>Modern Flat</span></label>
+
+      <div>
+        <form class="np reveal" id="orderForm" novalidate>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+            <span class="eyebrow" style="margin:0">Portrait Commission Ticket</span>
+            <button type="button" class="st-btn" id="quickDemoOrderBtn" style="font-size:12px;padding:6px 11px">⚡ Fill Sample Order</button>
+          </div>
+          <div class="fld">
+            <label for="cn">Your name</label>
+            <input id="cn" name="customer_name" placeholder="Maria Gonzalez" autocomplete="name">
+          </div>
+          <div class="fld">
+            <label for="ce">Email <span style="color:var(--amber)">*</span></label>
+            <input id="ce" name="customer_email" type="email" required placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="fld">
+            <label for="pn">Pet's name &amp; plaque title <span style="color:var(--amber)">*</span></label>
+            <input id="pn" name="pet_name" required placeholder="Duchess Luna" value="Duchess Luna">
+          </div>
+          <div class="fld">
+            <label>Choose a style <span style="color:var(--amber)">*</span></label>
+            <div class="styles-pick">
+              <label><input type="radio" name="selected_style" value="Royal Oil" checked><span>Royal Oil</span></label>
+              <label><input type="radio" name="selected_style" value="Pop Art"><span>Pop Art</span></label>
+              <label><input type="radio" name="selected_style" value="Modern Flat"><span>Modern Flat</span></label>
+            </div>
+          </div>
+          <div class="fld">
+            <label for="frameFinishSelect">Frame &amp; Finish</label>
+            <select id="frameFinishSelect" name="frame_finish">
+              <option value="Heirloom Gold">🏛️ Framed Heirloom — Gold Leaf ($119)</option>
+              <option value="Natural Oak">🪵 Framed Heirloom — Natural Oak ($119)</option>
+              <option value="Museum Black">⬛ Framed Heirloom — Museum Black ($119)</option>
+              <option value="Gallery Canvas">🖼️ Unframed Gallery Print ($69)</option>
+              <option value="Digital Proof + 300 DPI File">💻 Digital Master File Only ($45)</option>
+            </select>
+          </div>
+          <div class="fld">
+            <label>Your pet's photo <span style="color:var(--amber)">*</span></label>
+            <label class="drop has" id="drop" for="pf">
+              <div class="dz-ico">📷</div>
+              <strong id="dropTxt">Sample selected: luna-bengal.jpg (or tap to upload yours)</strong>
+              <small>JPG or PNG · clear &amp; well-lit · max 8 MB</small>
+              <img id="thumb" class="thumb-prev" src="assets/sample-oil.jpg" alt="Pet photo preview">
+            </label>
+            <input id="pf" type="file" accept="image/*" style="display:none">
+          </div>
+          <button class="btn primary submit" type="submit">Get my free proof →</button>
+          <div class="form-msg" id="formMsg"></div>
+          <p style="font-size:11.5px;color:var(--ink-2);margin-top:12px;text-align:center">By submitting you agree to receive your proof by email. No charge until you approve.</p>
+        </form>
+
+        <!-- SIMULATED SERVERLESS ORDER PIPELINE VISUALIZER -->
+        <div class="pipeline-card" id="pipelineCard" style="display:none">
+          <p class="eyebrow">Serverless Order Pipeline · Apps Script + Gemini Vision</p>
+          <h3 style="font-size:24px;margin:6px 0 4px" id="pipeHeading">Processing Your Portrait Request…</h3>
+          <p style="font-size:13.5px;color:var(--ink-2)" id="pipeSub">Running automated intake workflow (Drive → Sheets → AI Proof Generator)</p>
+
+          <div class="pipe-steps" id="pipeStepsList">
+            <div class="pipe-step" data-step="1"><span class="pipe-ico">1</span><span>Uploading high-res pet photo to <b>Google Drive Vault</b>…</span></div>
+            <div class="pipe-step" data-step="2"><span class="pipe-ico">2</span><span>Logging commission row to <b>Google Sheets Order Book</b>…</span></div>
+            <div class="pipe-step" data-step="3"><span class="pipe-ico">3</span><span>Rendering <b>Gemini Vision AI</b> style proof &amp; lighting pass…</span></div>
+            <div class="pipe-step" data-step="4"><span class="pipe-ico">4</span><span><b>Ready!</b> Order ticket &amp; instant digital proof generated.</span></div>
+          </div>
+
+          <div id="pipeResultArea" style="display:none">
+            <div class="proof-result">
+              <img id="pipeProofImg" src="assets/sample-oil.jpg" alt="Generated AI Portrait Proof">
+              <div>
+                <div style="font-family:var(--mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:.12em">✓ Instant AI Proof Preview</div>
+                <h4 style="font-family:var(--serif);font-size:21px;margin:3px 0" id="pipeProofTitle">“Duchess Luna” — Royal Oil</h4>
+                <p style="font-size:13px;color:var(--ink-2);margin-bottom:8px" id="pipeProofMeta">Framed in Heirloom Gold · Sent to you@example.com</p>
+                <span style="display:inline-block;background:#eef5e8;color:#2f4720;border:1px solid #bfd4b0;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px">Status: PROOF_READY_FOR_REVIEW</span>
+              </div>
+            </div>
+
+            <div class="ticket-box">
+              <div class="ticket-head">
+                <span id="pipeTicketId">TICKET #NP-2026-8419</span>
+                <span>GOOGLE SHEETS ROW JSON</span>
+              </div>
+              <pre id="pipeJsonPre" style="margin:0;white-space:pre-wrap;word-break:break-word"></pre>
+            </div>
+
+            <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+              <button type="button" class="btn primary" id="resetOrderFlowBtn" style="padding:11px 20px;font-size:14px">← Create Another Portrait</button>
+              <a href="#styles" class="btn ghost" style="padding:11px 20px;font-size:14px">Back to Studio</a>
+            </div>
           </div>
         </div>
-        <div class="fld">
-          <label>Your pet's photo <span style="color:var(--amber)">*</span></label>
-          <label class="drop" id="drop" for="pf">
-            <div class="dz-ico">📷</div>
-            <strong id="dropTxt">Tap to upload a photo</strong>
-            <small>JPG or PNG · clear &amp; well-lit · max 8 MB</small>
-            <img id="thumb" class="thumb-prev" alt="" style="display:none">
-          </label>
-          <input id="pf" type="file" accept="image/*" required style="display:none">
-        </div>
-        <button class="btn primary submit" type="submit">Get my free proof →</button>
-        <div class="form-msg" id="formMsg"></div>
-        <p style="font-size:11.5px;color:var(--ink-2);margin-top:12px;text-align:center">By submitting you agree to receive your proof by email. No charge until you approve.</p>
-      </form>
+      </div>
     </div>
   </section>
 
@@ -491,20 +654,160 @@
   // hero reveals immediately
   document.querySelectorAll(".hero .reveal").forEach(el => el.classList.add("in"));
 
-  // photo upload preview + base64
+  // photo upload preview + base64 + Interactive AI Portrait Studio
   const fileInput = document.getElementById("pf");
   const drop = document.getElementById("drop");
   const dropTxt = document.getElementById("dropTxt");
   const thumb = document.getElementById("thumb");
-  let photoDataUrl = "";
+
+  const liveFrame = document.getElementById("liveFrame");
+  const liveArtWrap = document.getElementById("liveArtWrap");
+  const livePreviewImg = document.getElementById("livePreviewImg");
+  const liveStyleBadge = document.getElementById("liveStyleBadge");
+  const livePlaqueText = document.getElementById("livePlaqueText");
+  const studioPlaqueInput = document.getElementById("studioPlaqueInput");
+  const petNameInput = document.getElementById("pn");
+  const frameFinishSelect = document.getElementById("frameFinishSelect");
+
+  let photoDataUrl = "assets/sample-oil.jpg";
+  let uploadedCustomPhoto = null;
+  let currentStyle = "Royal Oil";
+  let currentFinishClass = "finish-gold";
+  let currentFinishLabel = "Heirloom Gold";
+
+  const styleMeta = {
+    "Royal Oil": { css: "style-oil", defaultImg: "assets/sample-oil.jpg" },
+    "Pop Art": { css: "style-pop", defaultImg: "assets/sample-pop.jpg" },
+    "Modern Flat": { css: "style-flat", defaultImg: "assets/sample-flat.jpg" }
+  };
+
+  function updateStudioBadge() {
+    liveStyleBadge.textContent = currentStyle + " · " + currentFinishLabel;
+  }
+
+  function setStyle(styleName, updateImageIfSample) {
+    if (!styleMeta[styleName]) return;
+    currentStyle = styleName;
+    document.querySelectorAll("#studioStyleRow .st-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.style === styleName);
+    });
+    liveArtWrap.className = "live-art-wrap " + styleMeta[styleName].css;
+    if (!uploadedCustomPhoto && updateImageIfSample) {
+      photoDataUrl = styleMeta[styleName].defaultImg;
+      livePreviewImg.src = photoDataUrl;
+      thumb.src = photoDataUrl;
+      thumb.style.display = "block";
+    }
+    const radio = document.querySelector(`input[name="selected_style"][value="${styleName}"]`);
+    if (radio) radio.checked = true;
+    updateStudioBadge();
+  }
+
+  // Studio sample pet buttons
+  document.querySelectorAll("#studioPetRow .st-btn[data-pet]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      uploadedCustomPhoto = null;
+      document.querySelectorAll("#studioPetRow .st-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      photoDataUrl = btn.dataset.src;
+      livePreviewImg.src = photoDataUrl;
+      thumb.src = photoDataUrl;
+      thumb.style.display = "block";
+      drop.classList.add("has");
+      dropTxt.textContent = "Sample selected: " + btn.dataset.pet + "-portrait.jpg";
+
+      studioPlaqueInput.value = btn.dataset.name;
+      petNameInput.value = btn.dataset.name;
+      livePlaqueText.textContent = "“" + btn.dataset.name + "”";
+
+      if (btn.dataset.pet === "luna") setStyle("Royal Oil", false);
+      if (btn.dataset.pet === "barnaby") setStyle("Pop Art", false);
+      if (btn.dataset.pet === "mochi") setStyle("Modern Flat", false);
+    });
+  });
+
+  // Studio style buttons
+  document.querySelectorAll("#studioStyleRow .st-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      setStyle(btn.dataset.style, true);
+    });
+  });
+
+  // Order form style radios sync back to studio
+  document.querySelectorAll('input[name="selected_style"]').forEach(r => {
+    r.addEventListener("change", () => {
+      if (r.checked) setStyle(r.value, true);
+    });
+  });
+
+  // Studio frame finish buttons
+  document.querySelectorAll("#studioFrameRow .st-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#studioFrameRow .st-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFinishClass = btn.dataset.finish;
+      currentFinishLabel = btn.dataset.label;
+      liveFrame.className = "live-frame " + currentFinishClass;
+      if (frameFinishSelect) frameFinishSelect.value = currentFinishLabel;
+      updateStudioBadge();
+    });
+  });
+
+  if (frameFinishSelect) {
+    frameFinishSelect.addEventListener("change", () => {
+      const val = frameFinishSelect.value;
+      const matchBtn = Array.from(document.querySelectorAll("#studioFrameRow .st-btn")).find(b => b.dataset.label === val);
+      if (matchBtn) matchBtn.click();
+    });
+  }
+
+  // Plaque text two-way sync
+  studioPlaqueInput.addEventListener("input", () => {
+    const v = studioPlaqueInput.value.trim() || "Your Pet";
+    livePlaqueText.textContent = "“" + v + "”";
+    petNameInput.value = studioPlaqueInput.value;
+  });
+  petNameInput.addEventListener("input", () => {
+    const v = petNameInput.value.trim() || "Your Pet";
+    livePlaqueText.textContent = "“" + v + "”";
+    studioPlaqueInput.value = petNameInput.value;
+  });
+
+  // Upload custom photo from studio or form
+  document.getElementById("studioUploadBtn").addEventListener("click", () => fileInput.click());
+
   function fileToDataURL(f){ return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);}); }
   fileInput.addEventListener("change", async () => {
     const f = fileInput.files[0]; if(!f) return;
     if(f.size > MAX_PHOTO_MB*1024*1024){ showMsg("err","That photo is over "+MAX_PHOTO_MB+" MB — please pick a smaller one."); fileInput.value=""; return; }
     photoDataUrl = await fileToDataURL(f);
+    uploadedCustomPhoto = photoDataUrl;
     thumb.src = photoDataUrl; thumb.style.display="block";
+    livePreviewImg.src = photoDataUrl;
+    document.querySelectorAll("#studioPetRow .st-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("studioUploadBtn").classList.add("active");
     dropTxt.textContent = f.name.length>28 ? f.name.slice(0,25)+"…" : f.name;
     drop.classList.add("has"); showMsg("","");
+  });
+
+  // Quick Demo Fill button
+  const demoCustomers = [
+    { name: "Maria Gonzalez", email: "maria.gonzalez@example.com", pet: "Duchess Luna", style: "Royal Oil", finish: "Heirloom Gold", petKey: "luna" },
+    { name: "Liam O'Connor", email: "liam.oconnor@example.com", pet: "Sir Barnaby", style: "Pop Art", finish: "Museum Black", petKey: "barnaby" },
+    { name: "Chloe Takahashi", email: "chloe.t@example.com", pet: "Lord Mochi", style: "Modern Flat", finish: "Natural Oak", petKey: "mochi" }
+  ];
+  let demoOrderIdx = 0;
+  document.getElementById("quickDemoOrderBtn").addEventListener("click", () => {
+    const d = demoCustomers[demoOrderIdx % demoCustomers.length];
+    demoOrderIdx++;
+    document.getElementById("cn").value = d.name;
+    document.getElementById("ce").value = d.email;
+    const petBtn = document.querySelector(`#studioPetRow .st-btn[data-pet="${d.petKey}"]`);
+    if (petBtn) petBtn.click();
+    setStyle(d.style, true);
+    const frameBtn = Array.from(document.querySelectorAll("#studioFrameRow .st-btn")).find(b => b.dataset.label === d.finish);
+    if (frameBtn) frameBtn.click();
+    showMsg("ok", "✨ Loaded sample commission for <b>" + d.pet + "</b> (" + d.style + "). Click <b>Get my free proof →</b> below to run the serverless pipeline!");
   });
 
   function showMsg(kind, text){
@@ -513,31 +816,84 @@
     m.innerHTML = text;
   }
 
-  // submit
+  // Reset pipeline flow button
+  document.getElementById("resetOrderFlowBtn").addEventListener("click", () => {
+    document.getElementById("pipelineCard").style.display = "none";
+    const f = document.getElementById("orderForm");
+    f.style.display = "block";
+    const btn = f.querySelector(".submit");
+    btn.disabled = false;
+    btn.textContent = "Get my free proof →";
+    showMsg("", "");
+  });
+
+  // Submit & Simulated Serverless Order Pipeline
   document.getElementById("orderForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = e.target;
-    if(!f.customer_email.value || !f.pet_name.value){ showMsg("err","Please add your email and your pet's name."); return; }
-    if(!photoDataUrl){ showMsg("err","Please upload a photo of your pet."); return; }
+    if(!f.customer_email.value || !f.pet_name.value){ showMsg("err","Please add your email and your pet's name (or click '⚡ Fill Sample Order' above)."); return; }
+    if(!photoDataUrl){ showMsg("err","Please upload or select a photo of your pet."); return; }
+
+    const selectedStyle = f.querySelector('input[name="selected_style"]:checked').value;
+    const selectedFinish = frameFinishSelect ? frameFinishSelect.value : currentFinishLabel;
+    const ticketId = "NP-2026-" + Math.floor(1000 + Math.random() * 9000);
+
     const payload = {
-      customer_name:  f.customer_name.value.trim(),
+      ticket_id:      ticketId,
+      timestamp_utc:  new Date().toISOString(),
+      customer_name:  f.customer_name.value.trim() || "Valued Collector",
       customer_email: f.customer_email.value.trim(),
       pet_name:       f.pet_name.value.trim(),
-      selected_style: f.querySelector('input[name="selected_style"]:checked').value,
-      pet_photo:      photoDataUrl
+      selected_style: selectedStyle,
+      frame_finish:   selectedFinish,
+      drive_file_url: "https://drive.google.com/file/d/1NorthstarPaws_" + ticketId + "/view",
+      proof_status:   "GEMINI_VISION_PROOF_GENERATED"
     };
+
     const btn = f.querySelector(".submit");
-    btn.disabled = true; btn.textContent = "Sending…";
+    btn.disabled = true; btn.textContent = "Launching Pipeline…";
+
     try{
       if(NP_ENDPOINT.startsWith("PASTE_")){
-        // preview mode (no endpoint configured yet) — simulate success so the flow is demoable
-        await new Promise(r=>setTimeout(r,700));
+        // Interactive Serverless Order Pipeline Visualizer
+        f.style.display = "none";
+        const pipeCard = document.getElementById("pipelineCard");
+        const pipeResult = document.getElementById("pipeResultArea");
+        pipeCard.style.display = "block";
+        pipeResult.style.display = "none";
+        document.getElementById("pipeHeading").textContent = "Processing Commission " + ticketId + "…";
+
+        const steps = Array.from(document.querySelectorAll("#pipeStepsList .pipe-step"));
+        steps.forEach((s, idx) => {
+          s.classList.remove("active", "done");
+          s.querySelector(".pipe-ico").textContent = String(idx + 1);
+        });
+
+        for (let i = 0; i < steps.length; i++) {
+          steps[i].classList.add("active");
+          await new Promise(r => setTimeout(r, 480));
+          steps[i].classList.remove("active");
+          steps[i].classList.add("done");
+          steps[i].querySelector(".pipe-ico").textContent = "✓";
+        }
+
+        document.getElementById("pipeHeading").textContent = "Thank you, " + payload.customer_name.split(" ")[0] + "! 🎨";
+        document.getElementById("pipeSub").textContent = "Your commission is logged and your instant AI proof preview is ready below.";
+        document.getElementById("pipeProofImg").src = photoDataUrl;
+        document.getElementById("pipeProofImg").style.filter =
+          selectedStyle === "Royal Oil" ? "contrast(1.12) saturate(1.18) sepia(.18)" :
+          selectedStyle === "Pop Art" ? "contrast(1.38) saturate(1.75) hue-rotate(-8deg)" : "contrast(1.06) saturate(1.1)";
+        document.getElementById("pipeProofTitle").textContent = "“" + payload.pet_name + "” — " + selectedStyle;
+        document.getElementById("pipeProofMeta").textContent = selectedFinish + " · Proof emailed to " + payload.customer_email;
+        document.getElementById("pipeTicketId").textContent = "ORDER TICKET #" + ticketId;
+        document.getElementById("pipeJsonPre").textContent = JSON.stringify(payload, null, 2);
+        pipeResult.style.display = "block";
       } else {
-        const resp = await fetch(NP_ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload)});
+        const resp = await fetch(NP_ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({...payload, pet_photo: photoDataUrl})});
         if(!resp.ok) throw new Error("HTTP "+resp.status);
+        f.style.display="none";
+        showMsg("ok","<strong>Thank you"+(payload.customer_name?(", "+payload.customer_name.split(" ")[0]):"")+"! 🎨</strong><br>Your request for "+payload.pet_name+"'s "+payload.selected_style+" portrait is in. We'll email a free proof to "+payload.customer_email+" within 24–48 hours.");
       }
-      f.style.display="none";
-      showMsg("ok","<strong>Thank you"+(payload.customer_name?(", "+payload.customer_name.split(" ")[0]):"")+"! 🎨</strong><br>Your request for "+payload.pet_name+"'s "+payload.selected_style+" portrait is in. We'll email a free proof to "+payload.customer_email+" within 24–48 hours.");
     }catch(err){
       btn.disabled=false; btn.textContent="Get my free proof →";
       showMsg("err","Something went wrong sending your order ("+err.message+"). Please email hello@northstarpaws.store and we'll sort it out.");
