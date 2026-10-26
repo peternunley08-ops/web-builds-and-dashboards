@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northstar Paws — Fine-Art Portraits of the Pets We Love</title>
+<meta name="description" content="Premium, hand-grade custom portraits of your pet in three timeless styles — Vintage Oil, Pop-Art, and Modern Flat. A free proof before you pay. Museum-quality prints shipped worldwide.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#1b1611">
+<link rel="canonical" href="https://northstarpaws.store/">
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Northstar Paws">
+<meta property="og:title" content="Northstar Paws — Fine-Art Portraits of the Pets We Love">
+<meta property="og:description" content="One photo becomes a museum-quality portrait of your pet — Vintage Oil, Pop-Art, or Modern Flat. A free proof before you pay. Shipped worldwide.">
+<meta property="og:url" content="https://northstarpaws.store/">
+<meta property="og:image" content="https://northstarpaws.store/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Northstar Paws — Fine-Art Pet Portraits">
+<meta name="twitter:description" content="Your best friend, turned into fine art. Free proof before you pay.">
+<meta name="twitter:image" content="https://northstarpaws.store/assets/og-image.jpg">
+<!-- Structured data -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","@id":"https://northstarpaws.store/#org","name":"Northstar Paws","url":"https://northstarpaws.store/","email":"hello@northstarpaws.store","slogan":"Fine-art portraits of the pets we love.","logo":"https://northstarpaws.store/assets/favicon.svg"},
+{"@type":"Product","name":"Custom Pet Portrait","brand":{"@id":"https://northstarpaws.store/#org"},"description":"A museum-quality custom portrait of your pet in Vintage Oil, Pop-Art, or Modern Flat style, with a free digital proof before you pay.","image":"https://northstarpaws.store/assets/og-image.jpg","offers":{"@type":"AggregateOffer","priceCurrency":"USD","lowPrice":"45","highPrice":"229","offerCount":"3","availability":"https://schema.org/InStock"}},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Do I pay before I see anything?","acceptedAnswer":{"@type":"Answer","text":"Never. You upload a photo, we create your portrait, and we email a free digital proof. You only pay once you love it."}},
+{"@type":"Question","name":"What kind of photo works best?","acceptedAnswer":{"@type":"Answer","text":"One clear, well-lit photo where your pet's face is visible. A relaxed phone photo is perfect."}},
+{"@type":"Question","name":"How long does it take?","acceptedAnswer":{"@type":"Answer","text":"Your first proof lands within 24 to 48 hours. Prints are made on demand and typically ship within 3 to 6 business days."}},
+{"@type":"Question","name":"What sizes and materials can I get?","acceptedAnswer":{"@type":"Answer","text":"Digital files, premium posters, gallery canvas, and framed prints from 8x10 to 24x30 inches, printed with museum-grade inks."}},
+{"@type":"Question","name":"What if I do not love it?","acceptedAnswer":{"@type":"Answer","text":"We refine it until you do, and if we still cannot get it right, you owe nothing."}}
+]}
+]}
+</script>
+<style>
+  :root{
+    --bone:#f6efe2; --bone-2:#efe6d4; --cream:#fffdf8; --ink:#211b15; --ink-2:#574b3d;
+    --line:#ddd0b8; --amber:#a8541b; --amber-2:#c06a26; --gold:#b8923f; --olive:#5c6149;
+    --oil:#1b1611; --shadow:0 24px 60px -28px rgba(33,27,21,.45);
+    --serif:"Hoefler Text","Baskerville","Big Caslon",Georgia,"Times New Roman",serif;
+    --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bone);color:var(--ink);line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--amber);color:#fff}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{width:min(1180px,92vw);margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--amber)}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-.01em;line-height:1.05}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:650;font-size:15px;
+    padding:14px 26px;border-radius:999px;cursor:pointer;border:1.5px solid var(--ink);transition:transform .18s,background .2s,color .2s,box-shadow .2s}
+  .btn.primary{background:var(--ink);color:var(--bone);box-shadow:0 10px 26px -14px rgba(33,27,21,.7)}
+  .btn.primary:hover{background:var(--amber);border-color:var(--amber);transform:translateY(-2px)}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--bone);transform:translateY(-2px)}
+
+  /* paper grain overlay */
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.5;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E")}
+
+  /* ---------- nav ---------- */
+  header.nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    background:rgba(246,239,226,.72);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
+  header.nav.scrolled{border-color:var(--line);box-shadow:0 8px 30px -22px rgba(33,27,21,.5)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:21px;letter-spacing:.01em}
+  .star{width:26px;height:26px;flex:none;color:var(--amber)}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a.lnk{font-size:14.5px;font-weight:550;color:var(--ink-2);position:relative}
+  .nav-links a.lnk::after{content:"";position:absolute;left:0;right:100%;bottom:-5px;height:1.5px;background:var(--amber);transition:right .25s}
+  .nav-links a.lnk:hover{color:var(--ink)}.nav-links a.lnk:hover::after{right:0}
+  @media(max-width:820px){.nav-links a.lnk{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:64px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
+  .hero h1{font-size:clamp(40px,6vw,74px)}
+  .hero h1 em{font-style:italic;color:var(--amber)}
+  .hero .lede{font-size:clamp(17px,1.6vw,20px);color:var(--ink-2);max-width:30ch;margin:22px 0 30px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-note{margin-top:22px;font-size:13px;color:var(--ink-2);display:flex;gap:18px;flex-wrap:wrap}
+  .hero-note b{color:var(--ink);font-weight:650}
+  .frame{position:relative;background:var(--cream);padding:18px;border:1px solid var(--line);
+    box-shadow:var(--shadow);border-radius:4px;rotate:1.4deg;transition:rotate .5s}
+  .frame:hover{rotate:0deg}
+  .frame::before{content:"";position:absolute;inset:9px;border:1px solid var(--line);pointer-events:none}
+  .frame img{aspect-ratio:3/4;object-fit:cover;width:100%;filter:saturate(1.02)}
+  .frame .plate{position:absolute;bottom:-15px;left:50%;translate:-50% 0;background:var(--oil);color:var(--bone);
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;padding:6px 14px;border-radius:3px;white-space:nowrap}
+  @media(max-width:820px){.hero-grid{grid-template-columns:1fr;gap:46px}.frame{rotate:0deg;max-width:380px;margin:0 auto}}
+
+  /* ---------- trust strip ---------- */
+  .trust{border-block:1px solid var(--line);background:var(--bone-2)}
+  .trust-in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:18px 0;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+  .trust-in span{display:flex;align-items:center;gap:9px}
+  .trust-in b{color:var(--amber)}
+
+  /* ---------- section shell ---------- */
+  section{padding:88px 0;position:relative}
+  .sec-head{max-width:62ch}
+  .sec-head h2{font-size:clamp(30px,4.4vw,50px);margin:12px 0 14px}
+  .sec-head p{font-size:17px;color:var(--ink-2)}
+
+  /* ---------- styles gallery ---------- */
+  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:52px}
+  .card{background:var(--cream);border:1px solid var(--line);border-radius:6px;padding:16px;transition:transform .3s,box-shadow .3s}
+  .card:hover{transform:translateY(-7px);box-shadow:var(--shadow)}
+  .card .art{position:relative;border:1px solid var(--line);background:#fff;padding:12px;border-radius:3px}
+  .card .art::after{content:"";position:absolute;inset:6px;border:1px solid rgba(0,0,0,.06)}
+  .card .art img{aspect-ratio:3/4;object-fit:cover;width:100%}
+  .card h3{font-size:24px;margin:18px 4px 6px}
+  .card p{font-size:14.5px;color:var(--ink-2);margin:0 4px 4px}
+  .card .meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:12px 4px 4px}
+  @media(max-width:820px){.gal{grid-template-columns:1fr;max-width:420px;margin-inline:auto}}
+
+  /* ---------- how it works ---------- */
+  .how{background:var(--oil);color:var(--bone)}
+  .how .eyebrow{color:var(--gold)}
+  .how .sec-head h2{color:var(--bone)}.how .sec-head p{color:#cdbfa9}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:52px}
+  .step{border-top:2px solid rgba(255,253,248,.18);padding-top:22px}
+  .step .n{font-family:var(--serif);font-size:46px;color:var(--gold);line-height:1}
+  .step h3{font-size:21px;color:var(--bone);margin:14px 0 8px}
+  .step p{font-size:14.5px;color:#c9bba4}
+  .how .promise{margin-top:46px;border:1px solid rgba(255,253,248,.2);border-radius:10px;padding:22px 26px;
+    display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  .how .promise b{color:var(--gold)}
+  @media(max-width:820px){.steps{grid-template-columns:1fr}}
+
+  /* ---------- pricing ---------- */
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:52px}
+  .tier{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:30px 26px;position:relative;transition:transform .25s,box-shadow .25s}
+  .tier:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+  .tier.feat{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber) inset}
+  .tier .tag{position:absolute;top:-12px;left:26px;background:var(--amber);color:#fff;font-family:var(--mono);
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
+  .tier h3{font-size:23px}
+  .tier .amt{font-family:var(--serif);font-size:42px;margin:10px 0 2px}
+  .tier .amt small{font-size:15px;color:var(--ink-2);font-family:var(--sans)}
+  .tier ul{list-style:none;margin:18px 0 24px;font-size:14.5px;color:var(--ink-2)}
+  .tier li{padding:7px 0;border-bottom:1px solid var(--line);display:flex;gap:10px}
+  .tier li::before{content:"✦";color:var(--amber)}
+  .tier .btn{width:100%;justify-content:center}
+  @media(max-width:820px){.price-grid{grid-template-columns:1fr;max-width:420px;margin-inline:auto}}
+
+  /* ---------- testimonials ---------- */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:46px}
+  .quote{background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:26px}
+  .quote .stars{color:var(--amber);letter-spacing:3px;font-size:15px}
+  .quote blockquote{font-family:var(--serif);font-size:19px;line-height:1.45;margin:14px 0}
+  .quote figcaption{font-size:13px;color:var(--ink-2)}
+  .sample-note{margin-top:18px;font-size:12.5px;color:var(--ink-2);font-style:italic;text-align:center}
+  @media(max-width:820px){.quotes{grid-template-columns:1fr}}
+
+  /* ---------- order form ---------- */
+  .order{background:var(--bone-2);border-block:1px solid var(--line)}
+  .order-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:50px;align-items:start}
+  form.np{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:var(--shadow)}
+  .fld{margin-bottom:16px}
+  .fld label{display:block;font-size:12.5px;font-weight:650;letter-spacing:.02em;margin-bottom:6px;color:var(--ink)}
+  .fld input,.fld select{width:100%;font-family:var(--sans);font-size:15px;padding:12px 14px;border:1.5px solid var(--line);
+    border-radius:9px;background:#fff;color:var(--ink);transition:border-color .2s,box-shadow .2s}
+  .fld input:focus,.fld select:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(168,84,27,.13)}
+  .styles-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .styles-pick label{display:block;cursor:pointer;border:1.5px solid var(--line);border-radius:9px;padding:11px 8px;text-align:center;
+    font-size:12.5px;font-weight:600;background:#fff;transition:.18s}
+  .styles-pick input{position:absolute;opacity:0;pointer-events:none}
+  .styles-pick input:checked + span{}
+  .styles-pick label:has(input:checked){border-color:var(--amber);background:#fbf2e8;color:var(--amber)}
+  .drop{border:1.5px dashed var(--line);border-radius:10px;padding:18px;text-align:center;background:#fff;cursor:pointer;transition:.2s}
+  .drop:hover{border-color:var(--amber);background:#fffaf3}
+  .drop.has{border-style:solid;border-color:var(--olive)}
+  .drop .dz-ico{font-size:24px}
+  .drop small{display:block;color:var(--ink-2);font-size:12px;margin-top:4px}
+  .thumb-prev{max-height:120px;margin:8px auto 0;border-radius:8px;border:1px solid var(--line)}
+  .submit{width:100%;justify-content:center;margin-top:6px}
+  .form-msg{margin-top:12px;font-size:13.5px;border-radius:9px;padding:11px 13px;display:none}
+  .form-msg.ok{display:block;background:#eef3ea;border:1px solid #c9d8bd;color:#3f5230}
+  .form-msg.err{display:block;background:#fbece6;border:1px solid #e8c3b2;color:#9a4421}
+  .order-aside h2{font-size:clamp(28px,3.8vw,42px);margin:12px 0 16px}
+  .order-aside .chk{display:flex;gap:12px;margin:14px 0;font-size:15px;color:var(--ink-2)}
+  .order-aside .chk b{color:var(--ink)}
+  .order-aside .tick{color:var(--olive);flex:none;font-weight:800}
+  @media(max-width:880px){.order-grid{grid-template-columns:1fr;gap:34px}}
+
+  /* ---------- faq ---------- */
+  .faq-list{margin-top:40px;border-top:1px solid var(--line)}
+  details{border-bottom:1px solid var(--line)}
+  summary{list-style:none;cursor:pointer;padding:20px 4px;display:flex;justify-content:space-between;gap:18px;align-items:center;
+    font-family:var(--serif);font-size:20px}
+  summary::-webkit-details-marker{display:none}
+  summary .pm{font-family:var(--sans);font-size:24px;color:var(--amber);transition:transform .25s;flex:none}
+  details[open] summary .pm{transform:rotate(45deg)}
+  details .ans{padding:0 4px 22px;color:var(--ink-2);font-size:15.5px;max-width:75ch}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--oil);color:var(--bone);padding:64px 0 30px}
+  .foot-grid{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start}
+  footer .brand{color:var(--bone)}
+  footer p{color:#bfb29c;font-size:14px;max-width:34ch;margin-top:14px}
+  .foot-cols{display:flex;gap:54px;flex-wrap:wrap}
+  .foot-col h4{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+  .foot-col a{display:block;color:#cdbfa9;font-size:14px;padding:4px 0}
+  .foot-col a:hover{color:var(--bone)}
+  .foot-bottom{border-top:1px solid rgba(255,253,248,.14);margin-top:46px;padding-top:22px;display:flex;
+    justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:12.5px;color:#a99b85}
+
+  /* ---------- mobile sticky cta ---------- */
+  .mcta{position:fixed;left:0;right:0;bottom:0;z-index:18;display:none;gap:12px;align-items:center;justify-content:space-between;
+    padding:11px 16px;background:rgba(27,22,17,.96);backdrop-filter:blur(8px);color:var(--bone)}
+  .mcta b{font-family:var(--serif);font-size:16px}
+  .mcta .btn{padding:11px 20px;font-size:14px;background:var(--amber);border-color:var(--amber);color:#fff}
+  @media(max-width:820px){.mcta{display:flex}body{padding-bottom:64px}}
+
+  /* ---------- reveal animation ---------- */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.frame{rotate:0}}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">
+      <svg class="star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.6l2.3 6.3 6.7.3-5.2 4.2 1.8 6.5L12 15.8 6.4 19.2l1.8-6.5L3 8.5l6.7-.3z"/></svg>
+      Northstar&nbsp;Paws
+    </a>
+    <nav class="nav-links">
+      <a class="lnk" href="#styles">Styles</a>
+      <a class="lnk" href="#how">How it works</a>
+      <a class="lnk" href="#pricing">Pricing</a>
+      <a class="lnk" href="#faq">FAQ</a>
+      <a class="btn primary" href="#order">Order a portrait</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow reveal">Custom pet portraiture · est. on the Central Coast</p>
+        <h1 class="reveal" style="transition-delay:.06s">Your best friend,<br>turned into <em>fine art.</em></h1>
+        <p class="lede reveal" style="transition-delay:.12s">Send us one good photo. We craft a museum-quality portrait of your pet in the style you love — and you see a free proof before you ever pay.</p>
+        <div class="hero-cta reveal" style="transition-delay:.18s">
+          <a class="btn primary" href="#order">Start your portrait →</a>
+          <a class="btn ghost" href="#styles">See the styles</a>
+        </div>
+        <div class="hero-note reveal" style="transition-delay:.24s">
+          <span><b>Free proof</b> before you pay</span>
+          <span><b>From $45</b></span>
+          <span><b>Ships worldwide</b></span>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.15s">
+        <figure class="frame">
+          <img src="assets/sample-oil.jpg" alt="Vintage Oil portrait of a silver Bengal cat">
+          <figcaption class="plate">Vintage Oil · "Luna"</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <div class="trust">
+    <div class="wrap trust-in">
+      <span><b>✦</b> Free digital proof</span>
+      <span><b>✦</b> Museum-grade materials</span>
+      <span><b>✦</b> Made on demand, low waste</span>
+      <span><b>✦</b> Happiness guarantee</span>
+    </div>
+  </div>
+
+  <!-- STYLES -->
+  <section id="styles">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Three signature styles</p>
+        <h2>Pick the look that's most <em style="font-style:italic;color:var(--amber)">them</em>.</h2>
+        <p>Every portrait is grounded in your pet's real coat, eyes and markings — then rendered in one of three timeless directions.</p>
+      </div>
+      <div class="gal">
+        <article class="card reveal">
+          <div class="art"><img src="assets/sample-oil.jpg" alt="Vintage Oil pet portrait"></div>
+          <div class="meta">The Heirloom</div>
+          <h3>Vintage Oil</h3>
+          <p>Old-Masters warmth — impasto brushwork, candlelit glow, framed like a portrait in a country house.</p>
+        </article>
+        <article class="card reveal" style="transition-delay:.08s">
+          <div class="art"><img src="assets/sample-pop.jpg" alt="Pop-Art pet portrait"></div>
+          <div class="meta">The Statement</div>
+          <h3>Pop-Art</h3>
+          <p>Bold, joyful, unmistakable — flat colour, halftone dots and a CMYK punch worthy of a gallery wall.</p>
+        </article>
+        <article class="card reveal" style="transition-delay:.16s">
+          <div class="art"><img src="assets/sample-flat.jpg" alt="Modern Flat illustration pet portrait"></div>
+          <div class="meta">The Modernist</div>
+          <h3>Modern Flat</h3>
+          <p>Clean, contemporary and calm — minimal shapes and a designer palette that suits any room.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section class="how" id="how">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">From photo to masterpiece</p>
+        <h2>Three simple steps.</h2>
+        <p>No risk, no guesswork — you approve the art before anything is printed or charged.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal"><div class="n">01</div><h3>Send a photo</h3><p>Upload one clear, well-lit picture of your pet. Phone snaps are perfect — we work from what you've got.</p></div>
+        <div class="step reveal" style="transition-delay:.08s"><div class="n">02</div><h3>We craft a proof</h3><p>Our studio renders your portrait in your chosen style and emails you a free digital proof within 24–48 hours.</p></div>
+        <div class="step reveal" style="transition-delay:.16s"><div class="n">03</div><h3>Approve &amp; receive</h3><p>Love it? Approve and pay. Download the digital file instantly, or have a museum-quality print shipped to your door.</p></div>
+      </div>
+      <div class="promise reveal">
+        <div><b>The proof-first promise.</b> &nbsp;You never pay until you've seen your portrait and you love it. If we can't get it right, you owe nothing.</div>
+        <a class="btn ghost" href="#order" style="border-color:var(--gold);color:var(--gold)">Start now →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Honest pricing</p>
+        <h2>One portrait. Your choice of finish.</h2>
+        <p>Every order includes the high-resolution digital file and a free proof. Prints are made on demand and shipped worldwide.</p>
+      </div>
+      <div class="price-grid">
+        <div class="tier reveal">
+          <h3>Digital</h3>
+          <div class="amt">$45<small> / portrait</small></div>
+          <ul><li>High-res file (300 DPI)</li><li>Print it anywhere yourself</li><li>Free proof before you pay</li><li>One style of your choice</li></ul>
+          <a class="btn ghost" href="#order">Choose Digital</a>
+        </div>
+        <div class="tier feat reveal" style="transition-delay:.08s">
+          <div class="tag">Most loved</div>
+          <h3>Gallery Print</h3>
+          <div class="amt">from $69<small> + digital</small></div>
+          <ul><li>Premium poster or canvas</li><li>Sizes 8×10″ up to 24×30″</li><li>Museum-grade inks &amp; stock</li><li>Digital file included</li></ul>
+          <a class="btn primary" href="#order">Choose a Print</a>
+        </div>
+        <div class="tier reveal" style="transition-delay:.16s">
+          <h3>Framed Heirloom</h3>
+          <div class="amt">from $119<small> + digital</small></div>
+          <ul><li>Gallery-framed, ready to hang</li><li>Natural wood, black or white</li><li>The forever keepsake</li><li>Digital file included</li></ul>
+          <a class="btn ghost" href="#order">Choose Framed</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section style="background:var(--bone-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Kind words</p>
+        <h2>Made to be treasured.</h2>
+      </div>
+      <div class="quotes">
+        <figure class="quote reveal"><div class="stars">★★★★★</div><blockquote>"It captured her little soul — the proof made me tear up before I even hit order."</blockquote><figcaption>— Sample testimonial</figcaption></figure>
+        <figure class="quote reveal" style="transition-delay:.08s"><div class="stars">★★★★★</div><blockquote>"The oil version of our old boy hangs above the mantel now. It looks like a real painting."</blockquote><figcaption>— Sample testimonial</figcaption></figure>
+        <figure class="quote reveal" style="transition-delay:.16s"><div class="stars">★★★★★</div><blockquote>"Easiest gift I've ever given. Sent a phone photo, got back something I'll keep forever."</blockquote><figcaption>— Sample testimonial</figcaption></figure>
+      </div>
+      <p class="sample-note">Sample testimonials shown for layout — real, verified customer reviews replace these at launch.</p>
+    </div>
+  </section>
+
+  <!-- ORDER -->
+  <section class="order" id="order">
+    <div class="wrap order-grid">
+      <div class="order-aside reveal">
+        <p class="eyebrow">Start your portrait</p>
+        <h2>One photo is all it takes.</h2>
+        <div class="chk"><span class="tick">✓</span><div><b>No payment now.</b> We email a free proof first.</div></div>
+        <div class="chk"><span class="tick">✓</span><div><b>24–48h turnaround</b> for your first proof.</div></div>
+        <div class="chk"><span class="tick">✓</span><div><b>Unlimited little tweaks</b> until it's right.</div></div>
+        <div class="chk"><span class="tick">✓</span><div><b>Happiness guarantee</b> — love it or owe nothing.</div></div>
+      </div>
+      <form class="np reveal" id="orderForm" novalidate>
+        <div class="fld">
+          <label for="cn">Your name</label>
+          <input id="cn" name="customer_name" placeholder="Maria Gonzalez" autocomplete="name">
+        </div>
+        <div class="fld">
+          <label for="ce">Email <span style="color:var(--amber)">*</span></label>
+          <input id="ce" name="customer_email" type="email" required placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="fld">
+          <label for="pn">Pet's name <span style="color:var(--amber)">*</span></label>
+          <input id="pn" name="pet_name" required placeholder="Luna">
+        </div>
+        <div class="fld">
+          <label>Choose a style <span style="color:var(--amber)">*</span></label>
+          <div class="styles-pick">
+            <label><input type="radio" name="selected_style" value="Vintage Oil" checked><span>Vintage Oil</span></label>
+            <label><input type="radio" name="selected_style" value="Pop-Art"><span>Pop-Art</span></label>
+            <label><input type="radio" name="selected_style" value="Flat-Illustration"><span>Modern Flat</span></label>
+          </div>
+        </div>
+        <div class="fld">
+          <label>Your pet's photo <span style="color:var(--amber)">*</span></label>
+          <label class="drop" id="drop" for="pf">
+            <div class="dz-ico">📷</div>
+            <strong id="dropTxt">Tap to upload a photo</strong>
+            <small>JPG or PNG · clear &amp; well-lit · max 8 MB</small>
+            <img id="thumb" class="thumb-prev" alt="" style="display:none">
+          </label>
+          <input id="pf" type="file" accept="image/*" required style="display:none">
+        </div>
+        <button class="btn primary submit" type="submit">Get my free proof →</button>
+        <div class="form-msg" id="formMsg"></div>
+        <p style="font-size:11.5px;color:var(--ink-2);margin-top:12px;text-align:center">By submitting you agree to receive your proof by email. No charge until you approve.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap" style="max-width:880px">
+      <div class="sec-head reveal" style="margin-inline:auto;text-align:center">
+        <p class="eyebrow">Good to know</p>
+        <h2>Frequently asked.</h2>
+      </div>
+      <div class="faq-list reveal">
+        <details open><summary>Do I pay before I see anything?<span class="pm">+</span></summary><div class="ans">Never. You upload a photo, we create your portrait, and we email you a free digital proof. You only pay once you've seen it and you love it.</div></details>
+        <details><summary>What kind of photo works best?<span class="pm">+</span></summary><div class="ans">One clear, reasonably well-lit photo where your pet's face is visible. A relaxed phone photo is perfect — close-ups and good light beat professional gear every time.</div></details>
+        <details><summary>How long does it take?<span class="pm">+</span></summary><div class="ans">Your first proof lands within 24–48 hours. Digital files are delivered the moment you approve; printed and framed pieces are made on demand and typically ship within 3–6 business days.</div></details>
+        <details><summary>What sizes and materials can I get?<span class="pm">+</span></summary><div class="ans">Digital files, premium posters, gallery canvas, and framed prints (natural wood, black or white) — from 8×10″ up to 24×30″. Everything is printed with museum-grade inks and stock.</div></details>
+        <details><summary>Can you do more than one pet?<span class="pm">+</span></summary><div class="ans">Absolutely. Mention it when you order (or just reply to your proof email) and we'll arrange a multi-pet portrait.</div></details>
+        <details><summary>What if I don't love it?<span class="pm">+</span></summary><div class="ans">We'll refine it until you do — and if we still can't get it right, you owe nothing. That's the proof-first promise.</div></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#top">
+          <svg class="star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.6l2.3 6.3 6.7.3-5.2 4.2 1.8 6.5L12 15.8 6.4 19.2l1.8-6.5L3 8.5l6.7-.3z"/></svg>
+          Northstar&nbsp;Paws
+        </a>
+        <p>Fine-art portraits of the pets we love. Crafted with care, proofed before you pay, shipped worldwide.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col"><h4>Explore</h4><a href="#styles">Styles</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></div>
+        <div class="foot-col"><h4>Order</h4><a href="#order">Start a portrait</a><a href="#order">Gift a portrait</a></div>
+        <div class="foot-col"><h4>Contact</h4><a href="mailto:hello@northstarpaws.store">hello@northstarpaws.store</a><a href="https://northstarpaws.store" target="_blank" rel="noopener">northstarpaws.store</a></div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="yr"></span> Northstar Paws · Made on demand, with love.</span>
+      <span>Proof-first · Happiness guaranteed</span>
+    </div>
+  </div>
+</footer>
+
+<div class="mcta"><b>From $45 · free proof</b><a class="btn" href="#order">Order →</a></div>
+
+<script>
+  // ===== CONFIG: set this to your Apps Script Web App /exec URL (see Website_API_Contract.md) =====
+  const NP_ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+  const MAX_PHOTO_MB = 8;
+
+  document.getElementById("yr").textContent = "2026";
+
+  // sticky nav shadow
+  const nav = document.getElementById("nav");
+  addEventListener("scroll", () => nav.classList.toggle("scrolled", scrollY > 12), {passive:true});
+
+  // scroll reveal
+  const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target);} }), {threshold:.14});
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  // hero reveals immediately
+  document.querySelectorAll(".hero .reveal").forEach(el => el.classList.add("in"));
+
+  // photo upload preview + base64
+  const fileInput = document.getElementById("pf");
+  const drop = document.getElementById("drop");
+  const dropTxt = document.getElementById("dropTxt");
+  const thumb = document.getElementById("thumb");
+  let photoDataUrl = "";
+  function fileToDataURL(f){ return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);}); }
+  fileInput.addEventListener("change", async () => {
+    const f = fileInput.files[0]; if(!f) return;
+    if(f.size > MAX_PHOTO_MB*1024*1024){ showMsg("err","That photo is over "+MAX_PHOTO_MB+" MB — please pick a smaller one."); fileInput.value=""; return; }
+    photoDataUrl = await fileToDataURL(f);
+    thumb.src = photoDataUrl; thumb.style.display="block";
+    dropTxt.textContent = f.name.length>28 ? f.name.slice(0,25)+"…" : f.name;
+    drop.classList.add("has"); showMsg("","");
+  });
+
+  function showMsg(kind, text){
+    const m = document.getElementById("formMsg");
+    m.className = "form-msg" + (kind ? " "+kind : "");
+    m.innerHTML = text;
+  }
+
+  // submit
+  document.getElementById("orderForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    if(!f.customer_email.value || !f.pet_name.value){ showMsg("err","Please add your email and your pet's name."); return; }
+    if(!photoDataUrl){ showMsg("err","Please upload a photo of your pet."); return; }
+    const payload = {
+      customer_name:  f.customer_name.value.trim(),
+      customer_email: f.customer_email.value.trim(),
+      pet_name:       f.pet_name.value.trim(),
+      selected_style: f.querySelector('input[name="selected_style"]:checked').value,
+      pet_photo:      photoDataUrl
+    };
+    const btn = f.querySelector(".submit");
+    btn.disabled = true; btn.textContent = "Sending…";
+    try{
+      if(NP_ENDPOINT.startsWith("PASTE_")){
+        // preview mode (no endpoint configured yet) — simulate success so the flow is demoable
+        await new Promise(r=>setTimeout(r,700));
+      } else {
+        const resp = await fetch(NP_ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload)});
+        if(!resp.ok) throw new Error("HTTP "+resp.status);
+      }
+      f.style.display="none";
+      showMsg("ok","<strong>Thank you"+(payload.customer_name?(", "+payload.customer_name.split(" ")[0]):"")+"! 🎨</strong><br>Your request for "+payload.pet_name+"'s "+payload.selected_style+" portrait is in. We'll email a free proof to "+payload.customer_email+" within 24–48 hours.");
+    }catch(err){
+      btn.disabled=false; btn.textContent="Get my free proof →";
+      showMsg("err","Something went wrong sending your order ("+err.message+"). Please email hello@northstarpaws.store and we'll sort it out.");
+    }
+  });
+</script>
+</body>
+</html>

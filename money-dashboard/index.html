@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Money Dashboard — Chase + PayPal Budget Review</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --panel: #ffffff;
+    --ink: #16202c;
+    --muted: #6b7a8d;
+    --line: #e4e9ef;
+    --brand: #117ac9;        /* Chase-ish blue */
+    --paypal: #003087;
+    --green: #1f9d57;
+    --red: #d8453c;
+    --amber: #e0922f;
+    --shadow: 0 1px 3px rgba(20,40,60,.08), 0 6px 24px rgba(20,40,60,.06);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.45;
+  }
+  a { color: var(--brand); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 22px 20px 60px; }
+
+  /* Header */
+  header.app {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 11px;
+  }
+  .logo .mark {
+    width: 40px; height: 40px; border-radius: 11px;
+    background: linear-gradient(135deg, var(--brand), #0a4f86);
+    color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 20px;
+    box-shadow: var(--shadow);
+  }
+  .logo h1 { font-size: 19px; margin: 0; letter-spacing: -.2px; }
+  .logo p { margin: 0; font-size: 12.5px; color: var(--muted); }
+  .spacer { flex: 1 1 auto; }
+
+  .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  select, button, input {
+    font-family: inherit; font-size: 13.5px;
+  }
+  .btn {
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    padding: 9px 13px; border-radius: 10px; cursor: pointer; font-weight: 600;
+    transition: .15s; white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--brand); color: var(--brand); }
+  .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .btn.primary:hover { background: #0a5f9e; color: #fff; }
+  .btn.ghost { background: transparent; }
+  .month-sel { padding: 9px 11px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); font-weight: 600; }
+
+  /* Import / empty state */
+  #dropzone {
+    border: 2px dashed #c3d0dd; border-radius: var(--radius);
+    background: var(--panel); padding: 38px 24px; text-align: center; margin-bottom: 22px;
+    transition: .15s;
+  }
+  #dropzone.drag { border-color: var(--brand); background: #eef6fc; }
+  #dropzone h2 { margin: 4px 0 6px; font-size: 18px; }
+  #dropzone p { color: var(--muted); margin: 4px auto; max-width: 560px; font-size: 13.5px; }
+  .dz-actions { margin-top: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .help-toggle { margin-top: 14px; font-size: 12.5px; color: var(--brand); cursor: pointer; display: inline-block; }
+  .help { text-align: left; max-width: 640px; margin: 14px auto 0; background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; font-size: 13px; color: #41505f; display: none; }
+  .help.open { display: block; }
+  .help b { color: var(--ink); }
+  .help ol { margin: 6px 0 0; padding-left: 20px; }
+  .help li { margin: 4px 0; }
+
+  /* Summary cards */
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 17px; box-shadow: var(--shadow);
+  }
+  .card .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
+  .card .value { font-size: 26px; font-weight: 800; margin-top: 6px; letter-spacing: -.5px; }
+  .card .sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .value.pos { color: var(--green); }
+  .value.neg { color: var(--red); }
+
+  /* Layout columns */
+  .grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 16px; margin-bottom: 16px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .panel-head { padding: 14px 17px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+  .panel-head h3 { margin: 0; font-size: 15px; }
+  .panel-head .spacer { flex: 1; }
+  .panel-body { padding: 8px 17px 16px; }
+
+  /* Budget rows */
+  .budget-row { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .budget-row:last-child { border-bottom: none; }
+  .budget-top { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+  .cat-dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+  .cat-name { font-weight: 650; font-size: 13.5px; }
+  .budget-top .amt { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .budget-top .amt b { color: var(--ink); }
+  .bar { height: 8px; background: #eef2f6; border-radius: 6px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; border-radius: 6px; transition: width .4s; }
+  .budget-edit { background: transparent; border: none; border-bottom: 1px dashed #b9c6d3; width: 56px; text-align: right; font-size: 13px; color: var(--brand); cursor: text; padding: 0 0 1px; font-variant-numeric: tabular-nums; }
+  .budget-edit:focus { outline: none; border-bottom-color: var(--brand); }
+
+  /* Donut */
+  .donut-wrap { display: flex; align-items: center; gap: 18px; padding: 6px 0 2px; flex-wrap: wrap; }
+  .legend { flex: 1; min-width: 160px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 3px 0; }
+  .legend-item .nm { flex: 1; color: #41505f; }
+  .legend-item .vl { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* Transactions */
+  .tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .search { padding: 8px 11px; border: 1px solid var(--line); border-radius: 9px; min-width: 180px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: .4px; padding: 9px 10px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); }
+  tbody td { padding: 9px 10px; border-bottom: 1px solid #f0f3f6; vertical-align: middle; }
+  tbody tr:hover { background: #f8fbfe; }
+  td.amt { text-align: right; font-variant-numeric: tabular-nums; font-weight: 650; white-space: nowrap; }
+  td.amt.in { color: var(--green); }
+  td.amt.out { color: var(--ink); }
+  .src-tag { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+  .src-chase { background: #e6f1fa; color: var(--brand); }
+  .src-paypal { background: #e7ecf6; color: var(--paypal); }
+  .cat-select { border: 1px solid transparent; background: #f1f5f9; border-radius: 7px; padding: 4px 7px; font-size: 12px; max-width: 150px; cursor: pointer; }
+  .cat-select:hover { border-color: var(--line); }
+  .tx-scroll { max-height: 540px; overflow-y: auto; }
+  .empty-note { text-align: center; color: var(--muted); padding: 40px 10px; }
+
+  .footer-note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 26px; }
+  .pill { display: inline-block; background: #e9f7ef; color: var(--green); border-radius: 20px; padding: 3px 10px; font-size: 11.5px; font-weight: 700; }
+
+  @media (max-width: 880px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .grid { grid-template-columns: 1fr; }
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="app">
+    <div class="logo">
+      <div class="mark">$</div>
+      <div>
+        <h1>Money Dashboard</h1>
+        <p>Chase + PayPal budget review · <span class="pill">100% private · stays on your computer</span></p>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="controls">
+      <select id="monthSel" class="month-sel"></select>
+      <button class="btn" id="importBtn">＋ Import CSV</button>
+      <button class="btn ghost" id="sampleBtn">Try sample data</button>
+      <button class="btn ghost" id="menuBtn">⋯</button>
+    </div>
+  </header>
+
+  <!-- Hidden file input -->
+  <input type="file" id="fileInput" accept=".csv,text/csv" multiple class="hidden" />
+
+  <!-- Import / empty state -->
+  <section id="dropzone">
+    <h2>Drop your Chase &amp; PayPal CSV files here</h2>
+    <p>Everything runs in your browser — your transactions are never uploaded anywhere. Files are read on this device only and saved locally so they're here next time you open this page.</p>
+    <div class="dz-actions">
+      <button class="btn primary" id="chooseBtn">Choose CSV files</button>
+      <button class="btn" id="sampleBtn2">See it with sample data first</button>
+    </div>
+    <span class="help-toggle" id="helpToggle">How do I download my CSV from Chase &amp; PayPal? ▾</span>
+    <div class="help" id="helpBox">
+      <b>Chase:</b>
+      <ol>
+        <li>Sign in at <b>chase.com</b> → pick the account.</li>
+        <li>Click the <b>download icon</b> near the activity list.</li>
+        <li>Choose <b>"Spreadsheet (CSV)"</b>, pick a date range, and download.</li>
+      </ol>
+      <b style="display:block; margin-top:10px;">PayPal:</b>
+      <ol>
+        <li>Sign in → go to <b>Activity → Statements → Download</b>.</li>
+        <li>Pick a date range, file type <b>CSV</b>, and download.</li>
+      </ol>
+      <p style="margin-top:10px;">Then drag both files onto this page (or use "Choose CSV files"). The dashboard auto-detects which is which.</p>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <main id="dashboard" class="hidden">
+
+    <div class="cards">
+      <div class="card">
+        <div class="label">Money In</div>
+        <div class="value pos" id="cIncome">$0</div>
+        <div class="sub" id="cIncomeSub">this month</div>
+      </div>
+      <div class="card">
+        <div class="label">Money Out</div>
+        <div class="value neg" id="cSpend">$0</div>
+        <div class="sub" id="cSpendSub">this month</div>
+      </div>
+      <div class="card">
+        <div class="label">Net Cash Flow</div>
+        <div class="value" id="cNet">$0</div>
+        <div class="sub" id="cNetSub">in minus out</div>
+      </div>
+      <div class="card">
+        <div class="label">Budget Left</div>
+        <div class="value" id="cBudget">$0</div>
+        <div class="sub" id="cBudgetSub">across all budgets</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Budgets -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Budgets &amp; Spending by Category</h3>
+          <div class="spacer"></div>
+          <span class="sub" style="font-size:12px;color:var(--muted)">click a budget to edit</span>
+        </div>
+        <div class="panel-body" id="budgetList"></div>
+      </div>
+
+      <!-- Donut -->
+      <div class="panel">
+        <div class="panel-head"><h3>Where Your Money Went</h3></div>
+        <div class="panel-body">
+          <div class="donut-wrap">
+            <svg id="donut" width="150" height="150" viewBox="0 0 42 42"></svg>
+            <div class="legend" id="legend"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Transactions</h3>
+        <div class="spacer"></div>
+        <div class="tools">
+          <input class="search" id="search" placeholder="Search description…" />
+          <select id="catFilter" class="cat-select" style="max-width:none"></select>
+        </div>
+      </div>
+      <div class="tx-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:92px">Date</th>
+              <th>Description</th>
+              <th style="width:78px">Source</th>
+              <th style="width:160px">Category</th>
+              <th style="width:110px; text-align:right">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="txBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      Data is stored only in this browser (localStorage). To wipe everything, click <b>⋯ → Clear all data</b>.
+      Re-import fresh CSVs anytime — duplicates are skipped automatically.
+    </p>
+  </main>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   Money Dashboard — fully client-side, no network calls.
+   - Imports Chase (debit + credit card) and PayPal CSV exports
+   - Auto-categorizes, tracks budgets, charts spending
+   - Persists to localStorage
+   ============================================================ */
+
+const STORE_KEY = "moneyDash.v1";
+const fmt = n => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt0 = n => (n < 0 ? "-$" : "$") + Math.abs(Math.round(n)).toLocaleString("en-US");
+const monthKey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+const monthLabel = key => {
+  const [y, m] = key.split("-");
+  return new Date(y, m - 1, 1).toLocaleString("en-US", { month: "long", year: "numeric" });
+};
+
+/* ---------- Categories ---------- */
+const CATEGORIES = [
+  { name: "Income",            color: "#1f9d57", budget: 0 },
+  { name: "Groceries",         color: "#2e9e8f", budget: 500 },
+  { name: "Dining & Coffee",   color: "#e0922f", budget: 250 },
+  { name: "Transport & Gas",   color: "#9a6ae0", budget: 200 },
+  { name: "Shopping",          color: "#d8453c", budget: 200 },
+  { name: "Bills & Utilities", color: "#117ac9", budget: 400 },
+  { name: "Subscriptions",     color: "#e05c8a", budget: 80 },
+  { name: "Housing",           color: "#5a6b7b", budget: 1200 },
+  { name: "Health",            color: "#3fb6c4", budget: 120 },
+  { name: "Transfers",         color: "#a0aab4", budget: 0 },
+  { name: "Fees",              color: "#b5641c", budget: 0 },
+  { name: "Uncategorized",     color: "#c3cdd7", budget: 0 },
+];
+const catColor = name => (CATEGORIES.find(c => c.name === name) || {}).color || "#c3cdd7";
+const NON_SPEND = ["Income", "Transfers", "Fees", "Uncategorized"];
+
+/* keyword -> category. First match wins (order matters). */
+const RULES = [
+  ["Income", ["payroll","direct dep","direct deposit","salary","interest payment","interest paid","refund","tax ref","irs treas","zelle from","cash app from","received from","funds received","freelance"]],
+  ["Housing", ["rent","mortgage","hoa","leasing","property mgmt","apartment","greystone"]],
+  ["Bills & Utilities", ["at&t","verizon","t-mobile","tmobile","sprint","comcast","xfinity","spectrum","cox comm","electric","con edison","pg&e","duke energy","water dept","gas company","national grid","geico","progressive","state farm","allstate","insurance"]],
+  ["Subscriptions", ["netflix","spotify","hulu","disney","youtube","apple.com/bill","apple.com","google storage","google one","adobe","microsoft","amazon prime","prime video","patreon","gym","planet fit","la fitness","membership","chatgpt","openai","anthropic","claude","notion","dropbox","icloud"]],
+  ["Groceries", ["walmart","kroger","safeway","trader joe","whole foods","aldi","costco","sam's club","publix","heb","h-e-b","food lion","wegmans","giant","meijer","ralphs","albertsons","sprouts","grocery","supermarket"]],
+  ["Dining & Coffee", ["restaurant","doordash","ubereats","uber eats","grubhub","starbucks","mcdonald","chipotle","dunkin","pizza","coffee","taco bell","wendy","burger","chick-fil","panera","cafe","grill","bbq","sushi","ramen","bakery","deli","subway","popeyes","kfc","domino","five guys","shake shack","panda express"]],
+  ["Transport & Gas", ["shell","chevron","exxon","mobil","arco","marathon","valero","speedway","sunoco","circle k","wawa","quiktrip","gas ","fuel","uber","lyft","parking","toll","metro","transit","amtrak","air "]],
+  ["Shopping", ["amazon","amzn","target","ebay","etsy","best buy","nike","adidas","macy","nordstrom","home depot","lowe","ikea","wayfair","apple store","gamestop","sephora","ulta","old navy","store"]],
+  ["Health", ["pharmacy","cvs","walgreens","rite aid","doctor","dental","dentist","medical","clinic","hospital","optometr","urgent care","labcorp","quest diag"]],
+  ["Fees", ["service fee","monthly fee","overdraft","interest charge","late fee","atm fee","finance charge","foreign trans","annual fee"]],
+  ["Transfers", ["transfer","zelle","venmo","cash app","paypal transfer","withdrawal","atm ","payment thank you","autopay","online payment","bill pay","wire ","to savings","from savings","credit card payment"]],
+];
+
+function autoCategory(desc, amount, source) {
+  const d = (desc || "").toLowerCase();
+  for (const [cat, kws] of RULES) {
+    for (const kw of kws) {
+      if (d.includes(kw)) return cat;
+    }
+  }
+  if (amount > 0) return "Income";
+  return "Uncategorized";
+}
+
+/* ---------- State ---------- */
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (!s.budgets) s.budgets = defaultBudgets();
+      if (!s.overrides) s.overrides = {};
+      if (!s.transactions) s.transactions = [];
+      return s;
+    }
+  } catch (e) {}
+  return { transactions: [], budgets: defaultBudgets(), overrides: {} };
+}
+function defaultBudgets() {
+  const b = {};
+  CATEGORIES.forEach(c => { b[c.name] = c.budget; });
+  return b;
+}
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+/* ---------- CSV parsing ---------- */
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", inQ = false;
+  text = text.replace(/^﻿/, ""); // strip BOM
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i], n = text[i + 1];
+    if (inQ) {
+      if (c === '"' && n === '"') { field += '"'; i++; }
+      else if (c === '"') { inQ = false; }
+      else { field += c; }
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ",") { row.push(field); field = ""; }
+      else if (c === "\r") { /* ignore */ }
+      else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+      else field += c;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0].trim() !== ""));
+}
+
+function parseDate(s) {
+  if (!s) return null;
+  s = s.trim();
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);   // MM/DD/YYYY
+  if (m) {
+    let [, mo, da, yr] = m;
+    if (yr.length === 2) yr = "20" + yr;
+    return new Date(+yr, +mo - 1, +da);
+  }
+  m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);            // YYYY-MM-DD
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function num(v) {
+  if (v == null) return 0;
+  let s = String(v).trim();
+  const neg = /^\(.*\)$/.test(s);
+  s = s.replace(/[()$,\s]/g, "");
+  const n = parseFloat(s);
+  if (isNaN(n)) return 0;
+  return neg ? -Math.abs(n) : n;
+}
+
+/* Detect format from header row and map to normalized transactions */
+function rowsToTransactions(rows, filename) {
+  if (!rows.length) return [];
+  const header = rows[0].map(h => h.trim().toLowerCase());
+  const idx = name => header.indexOf(name);
+  const has = name => idx(name) !== -1;
+  const body = rows.slice(1);
+  const out = [];
+
+  const isPayPal = (has("gross") && has("net")) || (has("currency") && has("type") && (has("net") || has("gross")));
+  const isChaseCredit = has("transaction date") && has("amount");
+  const isChaseDebit = has("posting date") && has("amount");
+
+  function push(date, desc, amount, source) {
+    if (!date || !isFinite(amount) || amount === 0) return;
+    out.push({
+      id: `${source}|${date.toISOString().slice(0,10)}|${(desc||"").slice(0,40)}|${amount.toFixed(2)}`,
+      date: date.toISOString().slice(0, 10),
+      desc: (desc || "").trim().replace(/\s+/g, " "),
+      amount: amount,
+      source: source,
+    });
+  }
+
+  if (isPayPal) {
+    const di = idx("date"), ni = has("net") ? idx("net") : idx("gross");
+    const nameI = idx("name"), typeI = idx("type"), subjI = idx("subject");
+    for (const r of body) {
+      const date = parseDate(r[di]);
+      const amount = num(r[ni]);
+      const type = (typeI > -1 ? r[typeI] : "") || "";
+      if (/temporary hold|authorization|reversal of|currency conversion/i.test(type)) continue;
+      let label = (nameI > -1 ? r[nameI] : "").trim();
+      if (subjI > -1 && r[subjI]) label += (label ? " — " : "") + r[subjI].trim();
+      if (!label) label = type.trim() || "PayPal transaction";
+      push(date, label, amount, "paypal");
+    }
+    return out;
+  }
+
+  if (isChaseCredit) {
+    const di = idx("transaction date"), descI = idx("description"), ai = idx("amount");
+    for (const r of body) push(parseDate(r[di]), r[descI], num(r[ai]), "chase");
+    return out;
+  }
+
+  if (isChaseDebit) {
+    const di = idx("posting date"), descI = idx("description"), ai = idx("amount");
+    for (const r of body) push(parseDate(r[di]), r[descI], num(r[ai]), "chase");
+    return out;
+  }
+
+  // Generic fallback
+  const di = header.findIndex(h => h.includes("date"));
+  const ai = header.findIndex(h => h.includes("amount"));
+  const descI = header.findIndex(h => h.includes("desc") || h.includes("name") || h.includes("merchant") || h.includes("memo"));
+  if (di > -1 && ai > -1) {
+    const src = /paypal/i.test(filename) ? "paypal" : "chase";
+    for (const r of body) push(parseDate(r[di]), r[descI > -1 ? descI : 1], num(r[ai]), src);
+    return out;
+  }
+  return out;
+}
+
+function importFiles(fileList) {
+  const files = Array.from(fileList);
+  let pending = files.length, added = 0, dupes = 0;
+  if (!pending) return;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const txs = rowsToTransactions(parseCSV(reader.result), file.name);
+      const existing = new Set(state.transactions.map(t => t.id));
+      txs.forEach(t => {
+        if (existing.has(t.id)) { dupes++; return; }
+        existing.add(t.id);
+        state.transactions.push(t);
+        added++;
+      });
+      if (--pending === 0) finishImport(added, dupes, files.length);
+    };
+    reader.onerror = () => { if (--pending === 0) finishImport(added, dupes, files.length); };
+    reader.readAsText(file);
+  });
+}
+
+function finishImport(added, dupes, fileCount) {
+  state.transactions.sort((a, b) => (a.date < b.date ? 1 : -1));
+  saveState();
+  render();
+  let msg = `Imported ${added} transaction${added === 1 ? "" : "s"} from ${fileCount} file${fileCount === 1 ? "" : "s"}.`;
+  if (dupes) msg += ` Skipped ${dupes} duplicate${dupes === 1 ? "" : "s"}.`;
+  if (added === 0 && dupes === 0) msg = "No transactions found. Make sure these are Chase or PayPal CSV exports.";
+  toast(msg);
+}
+
+/* ---------- Category resolution (override aware) ---------- */
+function categoryOf(t) {
+  if (state.overrides[t.id]) return state.overrides[t.id];
+  return autoCategory(t.desc, t.amount, t.source);
+}
+
+/* ---------- Month list & current selection ---------- */
+function availableMonths() {
+  const set = new Set(state.transactions.map(t => monthKey(new Date(t.date))));
+  return Array.from(set).sort().reverse();
+}
+let currentMonth = null;
+
+/* ---------- Rendering ---------- */
+function render() {
+  const hasData = state.transactions.length > 0;
+  document.getElementById("dropzone").classList.toggle("hidden", hasData);
+  document.getElementById("dashboard").classList.toggle("hidden", !hasData);
+  if (!hasData) return;
+
+  const months = availableMonths();
+  if (!currentMonth || !months.includes(currentMonth)) currentMonth = months[0];
+
+  const sel = document.getElementById("monthSel");
+  sel.innerHTML = months.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join("");
+  sel.value = currentMonth;
+
+  const monthTx = state.transactions.filter(t => monthKey(new Date(t.date)) === currentMonth);
+
+  renderCards(monthTx);
+  renderBudgets(monthTx);
+  renderDonut(monthTx);
+  renderCatFilter();
+  renderTable(monthTx);
+}
+
+function spendingByCategory(monthTx) {
+  const out = {};
+  monthTx.forEach(t => {
+    if (t.amount >= 0) return; // only outflows
+    const cat = categoryOf(t);
+    out[cat] = (out[cat] || 0) + (-t.amount);
+  });
+  return out;
+}
+
+function renderCards(monthTx) {
+  let income = 0, spend = 0;
+  monthTx.forEach(t => {
+    const cat = categoryOf(t);
+    if (cat === "Transfers") return; // exclude internal transfers
+    if (t.amount > 0) income += t.amount; else spend += -t.amount;
+  });
+  const net = income - spend;
+
+  const spendByCat = spendingByCategory(monthTx);
+  let totalBudget = 0, totalSpentBudgeted = 0;
+  CATEGORIES.forEach(c => {
+    if (NON_SPEND.includes(c.name)) return;
+    totalBudget += state.budgets[c.name] || 0;
+    totalSpentBudgeted += spendByCat[c.name] || 0;
+  });
+  const left = totalBudget - totalSpentBudgeted;
+
+  document.getElementById("cIncome").textContent = fmt0(income);
+  document.getElementById("cSpend").textContent = fmt0(spend);
+  const netEl = document.getElementById("cNet");
+  netEl.textContent = fmt0(net);
+  netEl.className = "value " + (net >= 0 ? "pos" : "neg");
+  const budgetEl = document.getElementById("cBudget");
+  budgetEl.textContent = fmt0(left);
+  budgetEl.className = "value " + (left >= 0 ? "pos" : "neg");
+  document.getElementById("cBudgetSub").textContent = `${fmt0(totalSpentBudgeted)} of ${fmt0(totalBudget)} used`;
+  document.getElementById("cIncomeSub").textContent = monthLabel(currentMonth);
+  document.getElementById("cSpendSub").textContent = "excludes transfers";
+}
+
+function renderBudgets(monthTx) {
+  const spend = spendingByCategory(monthTx);
+  const list = document.getElementById("budgetList");
+  const order = CATEGORIES.filter(c => !["Income", "Transfers"].includes(c.name));
+  order.sort((a, b) => (spend[b.name] || 0) - (spend[a.name] || 0));
+
+  const html = order.map(c => {
+    const spent = spend[c.name] || 0;
+    const budget = state.budgets[c.name] || 0;
+    if (spent === 0 && budget === 0) return "";
+    const pct = budget > 0 ? Math.min(100, (spent / budget) * 100) : (spent > 0 ? 100 : 0);
+    const over = budget > 0 && spent > budget;
+    const barColor = over ? "var(--red)" : c.color;
+    const budgetField = `of $<input class="budget-edit" data-cat="${c.name}" value="${budget}" inputmode="decimal" />`;
+    return `
+      <div class="budget-row">
+        <div class="budget-top">
+          <span class="cat-dot" style="background:${c.color}"></span>
+          <span class="cat-name">${c.name}${over ? ' <span style="color:var(--red);font-size:11px">over</span>' : ''}</span>
+          <span class="amt"><b>${fmt0(spent)}</b> ${budgetField}</span>
+        </div>
+        <div class="bar"><span style="width:${pct}%; background:${barColor}"></span></div>
+      </div>`;
+  }).join("");
+
+  list.innerHTML = html || `<p class="empty-note">No spending recorded for ${monthLabel(currentMonth)}.</p>`;
+
+  list.querySelectorAll(".budget-edit").forEach(inp => {
+    inp.addEventListener("change", () => {
+      state.budgets[inp.dataset.cat] = num(inp.value);
+      saveState();
+      render();
+    });
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") inp.blur(); });
+  });
+}
+
+function renderDonut(monthTx) {
+  const spend = spendingByCategory(monthTx);
+  const entries = Object.entries(spend).filter(([k]) => k !== "Transfers").sort((a, b) => b[1] - a[1]);
+  const total = entries.reduce((s, [, v]) => s + v, 0);
+  const svg = document.getElementById("donut");
+  const legend = document.getElementById("legend");
+
+  if (total === 0) {
+    svg.innerHTML = `<circle cx="21" cy="21" r="15.9155" fill="none" stroke="#eef2f6" stroke-width="5"/>`;
+    legend.innerHTML = `<div class="empty-note" style="padding:10px">No outflows this month.</div>`;
+    return;
+  }
+
+  let offset = 25, segs = "";
+  entries.forEach(([cat, v]) => {
+    const pct = (v / total) * 100;
+    segs += `<circle cx="21" cy="21" r="15.9155" fill="none" stroke="${catColor(cat)}" stroke-width="5"
+      stroke-dasharray="${pct.toFixed(2)} ${(100 - pct).toFixed(2)}" stroke-dashoffset="${offset.toFixed(2)}"/>`;
+    offset -= pct;
+  });
+  svg.innerHTML = segs +
+    `<text x="21" y="20.5" text-anchor="middle" font-size="4.6" font-weight="700" fill="#16202c">${fmt0(total)}</text>
+     <text x="21" y="25" text-anchor="middle" font-size="2.7" fill="#6b7a8d">spent</text>`;
+
+  legend.innerHTML = entries.slice(0, 7).map(([cat, v]) => `
+    <div class="legend-item">
+      <span class="cat-dot" style="background:${catColor(cat)}"></span>
+      <span class="nm">${cat}</span>
+      <span class="vl">${fmt0(v)}</span>
+    </div>`).join("");
+}
+
+function renderCatFilter() {
+  const sel = document.getElementById("catFilter");
+  const cur = sel.value || "__all";
+  sel.innerHTML = `<option value="__all">All categories</option>` +
+    CATEGORIES.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+  sel.value = cur;
+}
+
+function renderTable(monthTx) {
+  const body = document.getElementById("txBody");
+  const q = (document.getElementById("search").value || "").toLowerCase();
+  const catF = document.getElementById("catFilter").value || "__all";
+
+  const rows = monthTx.filter(t => {
+    if (q && !t.desc.toLowerCase().includes(q)) return false;
+    if (catF !== "__all" && categoryOf(t) !== catF) return false;
+    return true;
+  });
+
+  if (!rows.length) {
+    body.innerHTML = `<tr><td colspan="5" class="empty-note">No transactions match.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(t => {
+    const cat = categoryOf(t);
+    const inOut = t.amount > 0 ? "in" : "out";
+    const dstr = new Date(t.date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const opts = CATEGORIES.map(c => `<option value="${c.name}" ${c.name === cat ? "selected" : ""}>${c.name}</option>`).join("");
+    return `
+      <tr>
+        <td>${dstr}</td>
+        <td>${escapeHtml(t.desc)}</td>
+        <td><span class="src-tag src-${t.source}">${t.source === "paypal" ? "PayPal" : "Chase"}</span></td>
+        <td><select class="cat-select" data-id="${escapeAttr(t.id)}">${opts}</select></td>
+        <td class="amt ${inOut}">${t.amount > 0 ? "+" : ""}${fmt(t.amount)}</td>
+      </tr>`;
+  }).join("");
+
+  body.querySelectorAll(".cat-select").forEach(sel => {
+    sel.addEventListener("change", () => {
+      state.overrides[sel.dataset.id] = sel.value;
+      saveState();
+      render();
+    });
+  });
+}
+
+function escapeHtml(s) { return String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+function escapeAttr(s) { return String(s).replace(/"/g, "&quot;"); }
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function toast(msg) {
+  let el = document.getElementById("toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "toast";
+    el.style.cssText = "position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#16202c;color:#fff;padding:11px 18px;border-radius:10px;font-size:13.5px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:50;max-width:90%;text-align:center";
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = "1";
+  el.style.transition = "none";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.style.transition = "opacity .4s"; el.style.opacity = "0"; }, 3400);
+}
+
+/* ---------- Sample data ---------- */
+function loadSample() {
+  const today = new Date();
+  const y = today.getFullYear(), m = today.getMonth();
+  const d = day => new Date(y, m, Math.min(day, 28)).toISOString().slice(0, 10);
+  const mk = (date, desc, amount, source) => ({ id: `${source}|sample|${desc}|${amount}`, date, desc, amount, source });
+  state.transactions = [
+    mk(d(1),  "PAYROLL DIRECT DEP ACME CORP", 2840.00, "chase"),
+    mk(d(2),  "Zelle payment from MOM", 200.00, "chase"),
+    mk(d(2),  "WHOLE FOODS MARKET #123", -86.42, "chase"),
+    mk(d(3),  "STARBUCKS STORE 0421", -6.75, "chase"),
+    mk(d(3),  "SHELL OIL 5743", -48.10, "chase"),
+    mk(d(4),  "NETFLIX.COM", -15.49, "chase"),
+    mk(d(4),  "SPOTIFY USA", -10.99, "chase"),
+    mk(d(5),  "AMAZON.COM*A12B3", -54.20, "chase"),
+    mk(d(6),  "TRADER JOE'S #455", -62.18, "chase"),
+    mk(d(7),  "DOORDASH CHIPOTLE", -23.45, "chase"),
+    mk(d(8),  "APARTMENT RENT - GREYSTONE", -1250.00, "chase"),
+    mk(d(9),  "AT&T WIRELESS PAYMENT", -78.00, "chase"),
+    mk(d(10), "CVS/PHARMACY 04122", -19.99, "chase"),
+    mk(d(11), "UBER TRIP 8H2K", -14.30, "chase"),
+    mk(d(12), "TARGET 00012345", -73.61, "chase"),
+    mk(d(13), "GEICO AUTO INSURANCE", -112.00, "chase"),
+    mk(d(14), "CHIPOTLE 1845", -12.85, "chase"),
+    mk(d(15), "Transfer to Savings", -300.00, "chase"),
+    mk(d(5),  "Payment received - Etsy order", 48.00, "paypal"),
+    mk(d(7),  "ADOBE Creative Cloud", -54.99, "paypal"),
+    mk(d(9),  "UBER EATS - Panera", -18.90, "paypal"),
+    mk(d(11), "eBay purchase - phone case", -12.40, "paypal"),
+    mk(d(16), "Sent - friend dinner split", -22.00, "paypal"),
+    mk(d(18), "ChatGPT Plus subscription", -20.00, "paypal"),
+    mk(d(20), "WALMART GROCERY PICKUP", -94.07, "chase"),
+    mk(d(21), "EXXONMOBIL 7741", -41.55, "chase"),
+    mk(d(22), "HULU", -17.99, "chase"),
+    mk(d(24), "PANDA EXPRESS 2210", -11.20, "chase"),
+    mk(d(25), "Freelance payment - client", 650.00, "paypal"),
+  ];
+  state.transactions.sort((a, b) => (a.date < b.date ? 1 : -1));
+  saveState();
+  render();
+  toast("Loaded sample data so you can explore. Use ⋯ → Clear all data, then import your real CSVs.");
+}
+
+/* ---------- Menu ---------- */
+function showMenu() {
+  const choice = prompt("Menu — type a number:\n1) Export my data (JSON backup)\n2) Clear ALL data\n3) Cancel", "3");
+  if (choice === "1") exportData();
+  else if (choice === "2") {
+    if (confirm("Delete ALL imported transactions, budgets, and categories from this browser? This cannot be undone.")) {
+      state = { transactions: [], budgets: defaultBudgets(), overrides: {} };
+      saveState();
+      currentMonth = null;
+      render();
+      toast("All data cleared.");
+    }
+  }
+}
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "money-dashboard-backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ---------- Wire up events ---------- */
+const fileInput = document.getElementById("fileInput");
+document.getElementById("importBtn").addEventListener("click", () => fileInput.click());
+document.getElementById("chooseBtn").addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", e => { importFiles(e.target.files); fileInput.value = ""; });
+
+document.getElementById("sampleBtn").addEventListener("click", loadSample);
+document.getElementById("sampleBtn2").addEventListener("click", loadSample);
+document.getElementById("menuBtn").addEventListener("click", showMenu);
+
+document.getElementById("monthSel").addEventListener("change", e => { currentMonth = e.target.value; render(); });
+document.getElementById("search").addEventListener("input", () => {
+  const monthTx = state.transactions.filter(t => monthKey(new Date(t.date)) === currentMonth);
+  renderTable(monthTx);
+});
+document.getElementById("catFilter").addEventListener("change", () => {
+  const monthTx = state.transactions.filter(t => monthKey(new Date(t.date)) === currentMonth);
+  renderTable(monthTx);
+});
+document.getElementById("helpToggle").addEventListener("click", () => {
+  document.getElementById("helpBox").classList.toggle("open");
+});
+
+// Drag & drop
+const dz = document.getElementById("dropzone");
+["dragenter", "dragover"].forEach(ev => document.addEventListener(ev, e => {
+  e.preventDefault();
+  if (!document.getElementById("dropzone").classList.contains("hidden")) dz.classList.add("drag");
+}));
+["dragleave", "drop"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("drag"); }));
+document.addEventListener("drop", e => {
+  const files = e.dataTransfer && e.dataTransfer.files;
+  if (files && files.length) importFiles(files);
+});
+
+// initial paint
+render();
+</script>
+</body>
+</html>

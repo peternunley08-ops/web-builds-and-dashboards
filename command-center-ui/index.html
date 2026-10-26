@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pete · Command Center</title>
+<style>
+  :root{
+    --bg:#0a0b10; --bg2:#0f1119; --card:#14161f; --card2:#181b26;
+    --line:#242838; --line2:#2e3346;
+    --txt:#e8eaf2; --mut:#8a90a6; --mut2:#5c6178;
+    --grn:#34d399; --grn-d:#0c2a22;
+    --amb:#fbbf24; --amb-d:#2c2410;
+    --red:#f87171; --red-d:#2c1414;
+    --blu:#60a5fa; --pur:#a78bfa; --pnk:#f472b6;
+    --acc:linear-gradient(135deg,#a78bfa,#60a5fa);
+    --shadow:0 8px 30px rgba(0,0,0,.45);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 600px at 80% -10%,#1a1430 0%,transparent 60%),radial-gradient(900px 500px at -10% 10%,#0c2233 0%,transparent 55%),var(--bg);color:var(--txt);overflow-x:hidden}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+  /* sidebar */
+  .side{background:linear-gradient(180deg,var(--bg2),var(--bg));border-right:1px solid var(--line);padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+  .brandmark{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+  .logo{width:34px;height:34px;border-radius:10px;background:var(--acc);display:grid;place-items:center;font-weight:800;color:#0a0b10;font-size:18px;box-shadow:0 6px 18px rgba(124,92,255,.4)}
+  .brandmark h1{font-size:15px;letter-spacing:.2px}
+  .brandmark span{display:block;font-size:11px;color:var(--mut);font-weight:500}
+  .nav{display:flex;flex-direction:column;gap:3px;margin-top:6px}
+  .nav button{display:flex;align-items:center;gap:11px;width:100%;background:transparent;border:0;color:var(--mut);padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:600;text-align:left;transition:.15s}
+  .nav button .ic{font-size:15px;width:18px;text-align:center}
+  .nav button:hover{background:var(--card);color:var(--txt)}
+  .nav button.on{background:var(--card2);color:var(--txt)}
+  .nav button.on .ic{filter:drop-shadow(0 0 6px rgba(124,92,255,.6))}
+  .side .foot{margin-top:auto;font-size:11px;color:var(--mut2);padding:8px;line-height:1.5}
+  .pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--grn);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+
+  /* main */
+  .main{padding:26px 30px 60px;max-width:1180px}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px;margin-bottom:24px}
+  .hello h2{font-size:24px;font-weight:750;letter-spacing:-.3px}
+  .hello p{color:var(--mut);font-size:13.5px;margin-top:3px}
+  .clock{text-align:right}
+  .clock .t{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+  .clock .d{color:var(--mut);font-size:12.5px;margin-top:2px}
+
+  .grid{display:grid;gap:16px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:1000px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}.app{grid-template-columns:1fr}.side{display:none}}
+
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+  .card h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+  /* stat */
+  .stat .v{font-size:30px;font-weight:780;letter-spacing:-.5px}
+  .stat .l{color:var(--mut);font-size:12.5px;margin-top:2px}
+  .stat .sub{margin-top:10px;font-size:12px;color:var(--mut2)}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700}
+  .chip.g{background:var(--grn-d);color:var(--grn)}
+  .chip.a{background:var(--amb-d);color:var(--amb)}
+  .chip.r{background:var(--red-d);color:var(--red)}
+  .chip.b{background:#10243d;color:var(--blu)}
+
+  .section-title{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:700;margin:30px 2px 14px}
+
+  /* brand card */
+  .brand{cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+  .brand:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .brand .bhead{display:flex;align-items:center;gap:14px}
+  .ring{--p:0;--c:var(--grn);width:54px;height:54px;border-radius:50%;flex:0 0 54px;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),#222636 0);position:relative}
+  .ring::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--card)}
+  .ring b{position:relative;font-size:13px;font-weight:750}
+  .brand .bn{flex:1}
+  .brand .bn .nm{font-size:16px;font-weight:730;display:flex;align-items:center;gap:8px}
+  .brand .bn .ct{color:var(--mut);font-size:12px;margin-top:1px}
+  .brand .price{font-size:14px;font-weight:700;color:var(--txt)}
+  .brand .stg{margin-top:13px;font-size:12.5px;color:var(--mut);line-height:1.5}
+  .brand .expand{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+  .brand.open .expand{max-height:900px}
+  .gates{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .gate{font-size:11px;padding:4px 9px;border-radius:8px;font-weight:600;display:flex;align-items:center;gap:5px;border:1px solid transparent}
+  .gate.green{background:var(--grn-d);color:var(--grn);border-color:#1c4a3a}
+  .gate.amber{background:var(--amb-d);color:var(--amb);border-color:#4a3c14}
+  .gate.red{background:var(--red-d);color:var(--red);border-color:#4a1c1c}
+  .gate.gray{background:#1a1d28;color:var(--mut);border-color:var(--line)}
+  .blk{margin-top:14px}
+  .blk h4{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut2);margin-bottom:7px;font-weight:700}
+  .blk ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .blk li{font-size:12.5px;color:var(--txt);line-height:1.45;display:flex;gap:8px}
+  .blk li::before{content:"";flex:0 0 6px;height:6px;margin-top:6px;border-radius:50%;background:var(--mut2)}
+  .blk.flag li::before{background:var(--red)}
+  .blk.next li::before{background:var(--grn)}
+  .caret{position:absolute;top:18px;right:18px;color:var(--mut2);font-size:12px;transition:.25s}
+  .brand.open .caret{transform:rotate(180deg)}
+
+  /* tasks */
+  .task{display:flex;align-items:flex-start;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+  .task:last-child{border-bottom:0}
+  .task input{appearance:none;width:19px;height:19px;border:2px solid var(--line2);border-radius:6px;cursor:pointer;flex:0 0 19px;margin-top:1px;transition:.15s;position:relative}
+  .task input:checked{background:var(--grn);border-color:var(--grn)}
+  .task input:checked::after{content:"✓";position:absolute;color:#06281d;font-size:13px;font-weight:900;left:3px;top:-2px}
+  .task .tl{flex:1}
+  .task .tl .lbl{font-size:13.5px;font-weight:560;line-height:1.4}
+  .task input:checked + .tl .lbl{text-decoration:line-through;color:var(--mut2)}
+  .task .meta{display:flex;gap:7px;margin-top:5px;flex-wrap:wrap}
+  .tag{font-size:10.5px;padding:2px 8px;border-radius:999px;font-weight:700;letter-spacing:.2px}
+  .tag.pete{background:#3a2a10;color:#f0b252}
+  .tag.agent{background:#10243d;color:var(--blu)}
+  .tag.brand{background:#1f1830;color:var(--pur)}
+
+  /* connections */
+  .conn{cursor:pointer;transition:.16s;display:flex;flex-direction:column;gap:10px}
+  .conn:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .conn .ch{display:flex;align-items:center;gap:11px}
+  .conn .ci{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:20px;background:#1b1f2c}
+  .conn .cn{font-weight:700;font-size:14.5px}
+  .conn .cs{font-size:11.5px;color:var(--mut);margin-top:1px}
+  .conn .desc{font-size:12px;color:var(--mut2);line-height:1.5}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+  .dot.off{background:var(--red)} .dot.on{background:var(--grn)} .dot.part{background:var(--amb)}
+
+  /* modal */
+  .ov{position:fixed;inset:0;background:rgba(5,6,10,.7);backdrop-filter:blur(4px);display:none;place-items:center;z-index:50;padding:20px}
+  .ov.show{display:grid}
+  .modal{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line2);border-radius:18px;max-width:540px;width:100%;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.6);max-height:85vh;overflow:auto}
+  .modal .mh{display:flex;align-items:center;gap:13px;margin-bottom:6px}
+  .modal .mh .ci{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:23px;background:#1b1f2c}
+  .modal h3{font-size:18px}
+  .modal .mst{font-size:12.5px;color:var(--mut);margin-bottom:18px}
+  .modal .step{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .modal .step .n{flex:0 0 24px;height:24px;border-radius:50%;background:var(--card2);border:1px solid var(--line2);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--blu)}
+  .modal .step .sx{font-size:13px;line-height:1.5;color:var(--txt)}
+  .modal .step .sx small{color:var(--mut);display:block;margin-top:2px;font-size:11.5px}
+  .modal .x{float:right;background:var(--card2);border:1px solid var(--line);color:var(--mut);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px}
+  .modal .note{margin-top:16px;padding:11px 13px;background:#10243d33;border:1px solid #1c3a5a;border-radius:10px;font-size:12px;color:var(--blu);line-height:1.5}
+
+  .panel{display:none}.panel.on{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .proj{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--line)}
+  .proj:last-child{border-bottom:0}
+  .proj .pi{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:16px;background:#1b1f2c}
+  .proj .pn{font-weight:650;font-size:13.5px}
+  .proj .pd{font-size:11.5px;color:var(--mut);margin-top:1px}
+  .mini{font-size:11px;color:var(--mut2);margin-top:4px}
+  a.lnk{color:var(--blu);text-decoration:none}a.lnk:hover{text-decoration:underline}
+  .empty{color:var(--mut2);font-size:12.5px;font-style:italic}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="brandmark">
+      <div class="logo">P</div>
+      <div><h1>Command Center</h1><span>Pete · founder OS</span></div>
+    </div>
+    <nav class="nav" id="nav">
+      <button class="on" data-p="overview"><span class="ic">◎</span> Overview</button>
+      <button data-p="companies"><span class="ic">▦</span> Companies</button>
+      <button data-p="tasks"><span class="ic">✓</span> Action items</button>
+      <button data-p="connections"><span class="ic">⚡</span> Connections</button>
+      <button data-p="projects"><span class="ic">⌘</span> Desktop &amp; projects</button>
+    </nav>
+    <div class="foot">
+      <span class="pulse"></span> live on local data<br/>
+      data snapshot:<br/><span id="snap">—</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="top">
+      <div class="hello">
+        <h2 id="greet">Welcome back</h2>
+        <p id="subgreet">Here's everything that matters, in one place.</p>
+      </div>
+      <div class="clock">
+        <div class="t" id="time">--:--</div>
+        <div class="d" id="date">—</div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section class="panel on" id="p-overview">
+      <div class="grid g4">
+        <div class="card stat"><div class="v" id="ov-brands">—</div><div class="l">Brands in flight</div><div class="sub"><span class="chip g" id="ov-live">—</span> &nbsp;<span class="chip a" id="ov-build">—</span></div></div>
+        <div class="card stat"><div class="v" id="ov-gatesum">—</div><div class="l">Launch gates cleared</div><div class="sub" id="ov-gatenote">across all brands</div></div>
+        <div class="card stat"><div class="v" id="ov-pete">—</div><div class="l">Items needing you</div><div class="sub">human-only steps</div></div>
+        <div class="card stat"><div class="v" id="ov-flags">—</div><div class="l">Compliance red flags</div><div class="sub">fix before any ad traffic</div></div>
+      </div>
+
+      <div class="section-title">The one thing today</div>
+      <div class="card" style="border-color:#4a3c14;background:linear-gradient(180deg,#1a1710,#14161f)">
+        <h3 style="color:var(--amb)">🔓 Critical path → first paid order</h3>
+        <div style="font-size:14px;line-height:1.6;color:var(--txt)">
+          <b>Cariven is the only store built and live</b> — the build is done. The single thing between you and revenue is
+          <b style="color:var(--amb)">activating Shopify Payments</b> (needs your gov ID + bank). After that: connect
+          <b>cariven.com</b> at the registrar and order a supplier sample. Everything else for Cariven is handled.
+        </div>
+      </div>
+
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card">
+          <h3>⚠️ Needs you personally</h3>
+          <div id="ov-petelist" class="blk"><ul></ul></div>
+        </div>
+        <div class="card">
+          <h3>🤖 Next moves I can run</h3>
+          <div id="ov-agentlist" class="blk next"><ul></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPANIES -->
+    <section class="panel" id="p-companies">
+      <div class="section-title">Brands · launch readiness <span style="color:var(--mut2);text-transform:none;letter-spacing:0">(click a card to expand)</span></div>
+      <div class="grid g2" id="brandgrid"></div>
+    </section>
+
+    <!-- TASKS -->
+    <section class="panel" id="p-tasks">
+      <div class="section-title">Action items <span style="color:var(--mut2);text-transform:none;letter-spacing:0">— checks save in your browser</span></div>
+      <div class="grid g2">
+        <div class="card">
+          <h3><span class="dot off"></span>Owned by you (human-only)</h3>
+          <div id="tasks-pete"></div>
+        </div>
+        <div class="card">
+          <h3><span class="dot on"></span>I can run these for you</h3>
+          <div id="tasks-agent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONNECTIONS -->
+    <section class="panel" id="p-connections">
+      <div class="section-title">Live connections <span style="color:var(--mut2);text-transform:none;letter-spacing:0">— click any tile for the exact hook-up steps</span></div>
+      <div class="grid g3" id="conngrid"></div>
+      <div class="card" style="margin-top:16px;border-color:#1c3a5a;background:#0d1722">
+        <h3 style="color:var(--blu)">ℹ️ Why these aren't auto-filled yet</h3>
+        <div style="font-size:13px;line-height:1.6;color:var(--mut)">
+          Google, Spotify, and live Shopify metrics each need a <b>one-time login/authorization</b> I don't have on this machine yet — there's no stored token for any of them. The company &amp; project panels are already <b style="color:var(--grn)">live on real files</b>. Tap a tile and tell me to wire it up; each takes a few minutes and then this dashboard fills in for real.
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="panel" id="p-projects">
+      <div class="section-title">Desktop &amp; projects</div>
+      <div class="grid g2">
+        <div class="card"><h3>⌘ Project folders detected</h3><div id="projlist"></div></div>
+        <div class="card">
+          <h3>📁 Quick links</h3>
+          <div class="blk"><ul id="quicklinks"></ul></div>
+          <div class="mini" style="margin-top:14px">Tip: I can deep-scan any of these (git status, last commit, TODOs) and add a live tile — just say which.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="ov" id="ov"><div class="modal" id="modal"></div></div>
+
+<script>
+const DATA = {
+  generatedAt: "2026-06-19 00:15 PDT",
+  owner: "Pete",
+  brands: [
+    {
+      key:"cariven", name:"Cariven", cat:"Red-light LED therapy mask", price:"$169",
+      pct:55, ring:"var(--amb)", store:"1hzt1f-ai.myshopify.com",
+      stage:"Store BUILT &amp; live · product Active · sample reviews removed. Gated on Payments + domain — closest to revenue.",
+      gates:[
+        {n:"Product Active", s:"green"},
+        {n:"Store/theme built", s:"green"},
+        {n:"Password off (public)", s:"amber"},
+        {n:"Sample reviews removed", s:"green"},
+        {n:"Shopify Payments", s:"red"},
+        {n:"Domain cariven.com", s:"red"},
+        {n:"care@ email auth", s:"red"},
+        {n:"Supplier + test order", s:"gray"},
+        {n:"Trademark (prelim clear)", s:"amber"},
+      ],
+      blockers:["Shopify Payments not activated — needs your gov ID + bank (critical path)","cariven.com does not resolve (NXDOMAIN) — DNS not pointed at Shopify","No supplier chosen / no test order — paid orders can't ship yet"],
+      flags:["Store is publicly reachable on the myshopify URL while Payments/domain aren't done — confirm the soft-launch is intentional (build plan intended password ON until launch day)"],
+      next:"Stage the cariven.com domain connection in admin + hand you exact DNS records the moment you say which registrar"
+    },
+    {
+      key:"cinderlux", name:"Cinderlux", cat:"Infrared sauna blanket", price:"$249",
+      pct:12, ring:"var(--red)", store:"— not created —",
+      stage:"Product spec + landing HTML done. No Shopify store/theme, no supplier. Cleanest copy of the three.",
+      gates:[
+        {n:"Product defined", s:"green"},
+        {n:"Store/theme built", s:"red"},
+        {n:"Reviews real", s:"red"},
+        {n:"Policies", s:"red"},
+        {n:"Domain", s:"red"},
+        {n:"Email auth", s:"red"},
+        {n:"Supplier + test order", s:"red"},
+        {n:"Shopify Payments", s:"gray"},
+      ],
+      blockers:["No Shopify store or theme built (shopify/sections empty) — blocks everything downstream","No supplier chosen, no sample ordered — nothing can ship","No domain, support email, or Payments — can't transact"],
+      flags:["100% sample/placeholder reviews + a fake 4.8★ hero rating — must come off before launch","Minor copy: 'glowing' (implied skin claim) + a 'Users tell us…' fake-testimonial line"],
+      next:"Convert the finished landing HTML into Shopify Liquid sections once a store exists (HTML already has section-split comments)"
+    },
+    {
+      key:"lunthera", name:"Lunthera", cat:"Cervical neck massager", price:"$89",
+      pct:14, ring:"var(--red)", store:"— not created —",
+      stage:"Polished static landing page built; Shopify theme not built. Health copy is disciplined; marketing artifacts need cleanup.",
+      gates:[
+        {n:"Product defined", s:"green"},
+        {n:"Storefront (static)", s:"amber"},
+        {n:"Store/theme built", s:"red"},
+        {n:"Reviews real", s:"red"},
+        {n:"Policies", s:"red"},
+        {n:"Domain", s:"red"},
+        {n:"Supplier + test order", s:"red"},
+        {n:"Shopify Payments", s:"gray"},
+      ],
+      blockers:["index.html never converted to a Liquid theme; no Shopify store","No supplier / sample / test order — fulfillment unwired","Shopify Payments not activated (owner + banking)"],
+      flags:["Fake 4.8/5 aggregate shown as real","'one of our most-gifted items' false social proof pre-launch","5 fake 'Sample' reviews live","'while introductory stock lasts' false scarcity on a dropship model","Name: phonetic near-collision with LUMENTHERA Corp (medical device) — clear formally before committing"],
+      next:"Strip deceptive-marketing artifacts from index.html (remove fake 4.8, rewrite 'most-gifted' FAQ, hide sample reviews, fix false scarcity)"
+    },
+    {
+      key:"vertabliss", name:"Vertabliss", cat:"Cervical neck traction", price:"$59",
+      pct:14, ring:"var(--red)", store:"— not created —",
+      stage:"Static landing built. HIGHEST medical-claim risk of the set — copy needs a softening pass before any paid traffic.",
+      gates:[
+        {n:"Product defined", s:"green"},
+        {n:"Storefront (static)", s:"amber"},
+        {n:"Store/theme built", s:"red"},
+        {n:"Reviews real", s:"red"},
+        {n:"Policies", s:"red"},
+        {n:"Domain", s:"red"},
+        {n:"Supplier + test order", s:"red"},
+        {n:"Shopify Payments", s:"gray"},
+      ],
+      blockers:["No Shopify store at all — entire store/theme/policies/checkout build unstarted","No supplier selected/sampled — foam firmness must be vetted + test order run","No domain/policies/support email — vertabliss.com unpurchased, footer links dead"],
+      flags:["'gentle cervical traction device' as primary descriptor (clinical term)","'opens up the tight upper segments' — structural/anatomical claim","'dull pressure behind tired eyes' / 'takes the edge off' — implied headache-relief claim","'most people notice… right away' — implied efficacy claim","Fake 4.8★ shown with 5 'Sample' reviews","'tension headaches' in keyword copy must never become an on-page/ad claim"],
+      next:"Soften flagged medical-claim copy in index.html/spec.json (swap 'cervical traction'→'neck stretcher/cradle', drop 'upper segments' / 'behind tired eyes' / 'most people notice' / fake 4.8) — file-based, no accounts or money needed"
+    },
+    {
+      key:"northstar", name:"Northstar Paws", cat:"Pet brand (separate store)", price:"live",
+      pct:90, ring:"var(--grn)", store:"northstarpaws.store",
+      stage:"Already LIVE on its own store + custom domain. Separate from the four DTC brands — kept untouched.",
+      gates:[
+        {n:"Store live", s:"green"},
+        {n:"Custom domain", s:"green"},
+        {n:"Catalog public", s:"green"},
+        {n:"Shopify Payments", s:"amber"},
+        {n:"Email flows (Klaviyo)", s:"amber"},
+      ],
+      blockers:["Confirm Shopify Payments live + auto-capture set","Klaviyo flows still in Draft — blocked on help@ mailbox"],
+      flags:[],
+      next:"Verify Payments auto-capture + flip Klaviyo flows live once the support mailbox exists"
+    },
+  ],
+  tasks:{
+    pete:[
+      {id:"p1", lbl:"Activate Shopify Payments for Cariven (gov ID + bank)", brand:"Cariven"},
+      {id:"p2", lbl:"Tell me the registrar for cariven.com so I can hand you exact DNS records", brand:"Cariven"},
+      {id:"p3", lbl:"Choose a supplier + order one physical sample (Cariven)", brand:"Cariven"},
+      {id:"p4", lbl:"Decide: keep Cariven public on myshopify URL, or re-gate until launch day?", brand:"Cariven"},
+      {id:"p5", lbl:"Buy domains: cinderlux / lunthera / vertabliss .com (confirm availability)", brand:"All"},
+      {id:"p6", lbl:"Formal USPTO/counsel trademark clearance — esp. Lunthera vs LUMENTHERA", brand:"Lunthera"},
+      {id:"p7", lbl:"Open supplier accounts + order samples for the 3 un-launched brands", brand:"All"},
+    ],
+    agent:[
+      {id:"a1", lbl:"Strip fake 4.8★ + sample reviews + false scarcity from Lunthera landing page", brand:"Lunthera"},
+      {id:"a2", lbl:"Soften Vertabliss medical-claim copy (cervical-traction / headache / efficacy phrases)", brand:"Vertabliss"},
+      {id:"a3", lbl:"Fix Cinderlux 'glowing' skin claim + remove fake testimonial line", brand:"Cinderlux"},
+      {id:"a4", lbl:"Build the Cariven branded footer columns (Shop/Learn/Support) if you want them", brand:"Cariven"},
+      {id:"a5", lbl:"Convert each brand's landing HTML into Shopify Liquid sections once stores exist", brand:"All"},
+      {id:"a6", lbl:"Draft post-delivery review-request email flow to replace sample reviews", brand:"All"},
+    ]
+  },
+  connections:[
+    {key:"google", name:"Google", st:"Not connected", state:"off", ic:"📧", color:"#ea4335",
+     desc:"Gmail unread + next calendar events for you@example.com",
+     steps:["Authorize Google: create an OAuth client (or connect a Google account skill) granting read-only Gmail + Calendar.","Paste the token / complete the consent screen once.","I pull unread count, top senders, and your next 5 events into this tile — auto-refreshing."],
+     note:"Read-only scopes only. I never send mail or change your calendar without asking."},
+    {key:"shopify", name:"Shopify metrics", st:"CLI authed · no API token", state:"part", ic:"🛍️", color:"#95bf47",
+     desc:"Live orders, revenue, sessions across Cariven + Northstar",
+     steps:["In each store admin: Settings → Apps → Develop apps → create a custom app.","Grant read_orders, read_products, read_reports; install; copy the Admin API access token.","Drop the token(s) in a local .env — I render today's orders, revenue & conversion per store here."],
+     note:"The Shopify CLI is already logged in for theme work, but storefront metrics need an Admin API token (the CLI can't read them)."},
+    {key:"spotify", name:"Spotify", st:"Not connected", state:"off", ic:"🎵", color:"#1db954",
+     desc:"Now playing, recent tracks, focus playlists",
+     steps:["Create a Spotify app at developer.spotify.com → get client ID + secret.","Authorize once (read playback + recently-played scopes).","Now-playing + a quick-play focus playlist appear here."],
+     note:"Pure quality-of-life. Lowest priority of the bunch — say the word and it's a 5-min hookup."},
+    {key:"school", name:"Schoolwork", st:"Source unknown", state:"off", ic:"🎓", color:"#60a5fa",
+     desc:"Upcoming assignments & due dates",
+     steps:["Tell me the platform: Canvas, Blackboard, Google Classroom, or just a folder/spreadsheet.","If it's an LMS, most expose an iCal feed or API token I can read.","I surface what's due next, sorted by deadline."],
+     note:"I found a 'Swim' folder + swim-roster project on your Desktop — is school tracked there, or somewhere else?"},
+    {key:"finance", name:"Finance", st:"Folder found", state:"part", ic:"💵", color:"#34d399",
+     desc:"Spend / runway across the brands",
+     steps:["Point me at where numbers live (a sheet, CSV export, or bank/Stripe).","I can total ad spend, COGS, and margins against the playbook's break-even CPA.","Per-brand P&L snapshot lands here."],
+     note:"There's a 'Finance' folder on your Desktop — want me to peek and build a real money tile?"},
+    {key:"updates", name:"Company updates", st:"Live", state:"on", ic:"📈", color:"#a78bfa",
+     desc:"Auto-summary of what changed across brands",
+     steps:["Already live — this reads your local launch docs + audit files.","Each night's COO brief diffs against the last and logs WHAT CHANGED.","Nothing to connect."],
+     note:"This one's already wired to your real files — it's the engine behind the Companies tab."},
+  ],
+  projects:[
+    {n:"dtc-stores", d:"4 DTC brands (Cariven live-built, 3 in audit)", ic:"🛍️", tag:"active"},
+    {n:"Northstar-Paws-Site", d:"Pet brand — live store", ic:"🐾", tag:"live"},
+    {n:"lumera-led-sculptor", d:"Related LED asset (reusable email/SMS flows)", ic:"💡", tag:"asset"},
+    {n:"slo-agency-os", d:"Agency OS project", ic:"🏢", tag:"project"},
+    {n:"agent-os", d:"Agent OS project", ic:"🤖", tag:"project"},
+    {n:"swim-roster", d:"Swim roster app (+ packaged builds)", ic:"🏊", tag:"project"},
+    {n:"Finance", d:"Finance folder", ic:"💵", tag:"folder"},
+    {n:"Swim", d:"Swim folder", ic:"🏊", tag:"folder"},
+  ],
+  quicklinks:[
+    {t:"Cariven launch docs", p:"dtc-stores/red-light-mask/docs/"},
+    {t:"Per-brand audits (LAUNCH-AUDIT.md)", p:"dtc-stores/*/docs/LAUNCH-AUDIT.md"},
+    {t:"Launch & validation playbook", p:"dtc-stores/LAUNCH-PLAYBOOK.md"},
+    {t:"This dashboard", p:"Desktop/dashboard/index.html"},
+  ]
+};
+
+/* ---------- render ---------- */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const stateLabel={green:"●",amber:"●",red:"●",gray:"○"};
+
+function clock(){
+  const n=new Date();
+  let h=n.getHours(),m=n.getMinutes();
+  const ap=h>=12?"PM":"AM"; h=h%12||12;
+  $("#time").textContent=`${h}:${String(m).padStart(2,"0")} ${ap}`;
+  $("#date").textContent=n.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+  const hr=n.getHours();
+  $("#greet").textContent=(hr<5?"Burning the midnight oil":hr<12?"Good morning":hr<18?"Good afternoon":"Good evening")+", Pete";
+}
+setInterval(clock,1000); clock();
+$("#snap").textContent=DATA.generatedAt;
+
+/* overview stats */
+const liveBrands=DATA.brands.filter(b=>b.pct>=80).length;
+const buildBrands=DATA.brands.length-liveBrands;
+let totGreen=0,totGates=0,totFlags=0;
+DATA.brands.forEach(b=>{b.gates.forEach(g=>{totGates++;if(g.s==="green")totGreen++});totFlags+=b.flags.length});
+$("#ov-brands").textContent=DATA.brands.length;
+$("#ov-live").textContent=liveBrands+" live";
+$("#ov-build").textContent=buildBrands+" building";
+$("#ov-gatesum").textContent=totGreen+"/"+totGates;
+$("#ov-gatenote").textContent="green across "+DATA.brands.length+" brands";
+$("#ov-pete").textContent=DATA.tasks.pete.length;
+$("#ov-flags").textContent=totFlags;
+
+$("#ov-petelist").querySelector("ul").innerHTML=DATA.tasks.pete.slice(0,5).map(t=>`<li>${t.lbl} <span class="tag brand">${t.brand}</span></li>`).join("");
+$("#ov-agentlist").querySelector("ul").innerHTML=DATA.tasks.agent.slice(0,5).map(t=>`<li>${t.lbl}</li>`).join("");
+
+/* brands */
+$("#brandgrid").innerHTML=DATA.brands.map(b=>`
+  <div class="card brand" data-k="${b.key}">
+    <div class="caret">▼</div>
+    <div class="bhead">
+      <div class="ring" style="--p:${b.pct};--c:${b.ring}"><b>${b.pct}%</b></div>
+      <div class="bn"><div class="nm">${b.name} ${b.pct>=80?'<span class="chip g">LIVE</span>':b.pct>40?'<span class="chip a">BUILT</span>':'<span class="chip r">EARLY</span>'}</div><div class="ct">${b.cat}</div></div>
+      <div class="price">${b.price}</div>
+    </div>
+    <div class="stg">${b.stage}</div>
+    <div class="expand">
+      <div class="gates">${b.gates.map(g=>`<span class="gate ${g.s}">${stateLabel[g.s]} ${g.n}</span>`).join("")}</div>
+      <div class="blk"><h4>Top blockers</h4><ul>${b.blockers.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+      ${b.flags.length?`<div class="blk flag"><h4>Compliance / honesty flags</h4><ul>${b.flags.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}
+      <div class="blk next"><h4>Next move I can run</h4><ul><li>${b.next}</li></ul></div>
+      <div class="mini">store: ${b.store}</div>
+    </div>
+  </div>`).join("");
+$$(".brand").forEach(c=>c.onclick=()=>c.classList.toggle("open"));
+
+/* tasks with persistence */
+function taskHTML(t,kind){
+  const checked=localStorage.getItem("task_"+t.id)==="1"?"checked":"";
+  return `<label class="task"><input type="checkbox" data-id="${t.id}" ${checked}/>
+    <div class="tl"><div class="lbl">${t.lbl}</div>
+    <div class="meta"><span class="tag ${kind==='pete'?'pete':'agent'}">${kind==='pete'?'YOU':'AGENT'}</span><span class="tag brand">${t.brand}</span></div></div></label>`;
+}
+$("#tasks-pete").innerHTML=DATA.tasks.pete.map(t=>taskHTML(t,"pete")).join("");
+$("#tasks-agent").innerHTML=DATA.tasks.agent.map(t=>taskHTML(t,"agent")).join("");
+$$('.task input').forEach(i=>i.onchange=()=>localStorage.setItem("task_"+i.dataset.id,i.checked?"1":"0"));
+
+/* connections */
+$("#conngrid").innerHTML=DATA.connections.map(c=>`
+  <div class="card conn" data-k="${c.key}">
+    <div class="ch"><div class="ci" style="color:${c.color}">${c.ic}</div>
+    <div><div class="cn">${c.name}</div><div class="cs"><span class="dot ${c.state}"></span>${c.st}</div></div></div>
+    <div class="desc">${c.desc}</div>
+  </div>`).join("");
+$$(".conn").forEach(el=>el.onclick=()=>openModal(el.dataset.k));
+
+function openModal(k){
+  const c=DATA.connections.find(x=>x.key===k);
+  $("#modal").innerHTML=`<button class="x" onclick="closeModal()">✕</button>
+    <div class="mh"><div class="ci" style="color:${c.color}">${c.ic}</div><div><h3>${c.name}</h3><div class="cs"><span class="dot ${c.state}"></span>${c.st}</div></div></div>
+    <div class="mst">${c.desc}</div>
+    ${c.steps.map((s,i)=>`<div class="step"><div class="n">${i+1}</div><div class="sx">${s}</div></div>`).join("")}
+    <div class="note">💡 ${c.note}</div>`;
+  $("#ov").classList.add("show");
+}
+function closeModal(){$("#ov").classList.remove("show")}
+$("#ov").onclick=e=>{if(e.target.id==="ov")closeModal()};
+window.closeModal=closeModal;
+
+/* projects */
+const tagColor={active:"g",live:"g",asset:"b",project:"a",folder:"r"};
+$("#projlist").innerHTML=DATA.projects.map(p=>`
+  <div class="proj"><div class="pi">${p.ic}</div><div style="flex:1"><div class="pn">${p.n}</div><div class="pd">${p.d}</div></div>
+  <span class="chip ${tagColor[p.tag]||'b'}">${p.tag}</span></div>`).join("");
+$("#quicklinks").innerHTML=DATA.quicklinks.map(q=>`<li><b>${q.t}</b><br><span class="mini">${q.p}</span></li>`).join("");
+
+/* nav */
+$$("#nav button").forEach(b=>b.onclick=()=>{
+  $$("#nav button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  $$(".panel").forEach(p=>p.classList.remove("on"));
+  $("#p-"+b.dataset.p).classList.add("on");
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+</script>
+</body>
+</html>

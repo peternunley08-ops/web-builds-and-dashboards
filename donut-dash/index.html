@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donut Dash — Community Run for SLO Food Bank</title>
+  <meta name="description" content="Donut Dash is a community run and canned food drive benefiting SLO Food Bank. Out-and-back on the Bob Jones Trail in Avila Beach, CA. All proceeds go directly to SLO Food Bank." />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <!-- Leaflet for interactive course map -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+  <style>
+    /* ── Design tokens ────────────────────────────────────────────── */
+    :root, [data-theme="light"] {
+      --text-xs: clamp(.75rem,.72rem + .15vw,.875rem);
+      --text-sm: clamp(.9rem,.85rem + .2vw,1rem);
+      --text-base: clamp(1rem,.95rem + .25vw,1.1rem);
+      --text-lg: clamp(1.125rem,1rem + .7vw,1.4rem);
+      --text-xl: clamp(1.6rem,1.25rem + 1.5vw,2.4rem);
+      --text-2xl: clamp(2.5rem,1.25rem + 4vw,5rem);
+      --space-2:.5rem; --space-3:.75rem; --space-4:1rem; --space-5:1.25rem;
+      --space-6:1.5rem; --space-8:2rem; --space-10:2.5rem; --space-12:3rem;
+      --space-16:4rem; --space-20:5rem;
+      --color-bg:#fff8ef;
+      --color-surface:#fffdf8;
+      --color-surface-2:#fff1db;
+      --color-surface-3:#ffe7bf;
+      --color-border:#e6d7bd;
+      --color-text:#2d2418;
+      --color-text-muted:#6f665c;
+      --color-primary:#bc5a17;
+      --color-primary-hover:#9c4910;
+      --color-accent:#ffd166;
+      --color-ink:#5e2ca5;
+      --color-success:#2c7a46;
+      --color-danger:#9d2b2b;
+      --radius-sm:.65rem; --radius-md:1rem; --radius-lg:1.35rem;
+      --radius-xl:1.8rem; --radius-full:999px;
+      --shadow-sm:0 4px 14px rgba(103,62,23,.08);
+      --shadow-lg:0 18px 50px rgba(103,62,23,.14);
+      --font-display:'Cabinet Grotesk',system-ui,sans-serif;
+      --font-body:'Satoshi',system-ui,sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg:#17120e;
+      --color-surface:#221b15;
+      --color-surface-2:#2a2119;
+      --color-surface-3:#34271c;
+      --color-border:#544435;
+      --color-text:#f7efe2;
+      --color-text-muted:#c8b39f;
+      --color-primary:#ff9f59;
+      --color-primary-hover:#ffb982;
+      --color-accent:#ffd166;
+      --color-ink:#c8b3ff;
+      --color-success:#78d49d;
+      --color-danger:#ff8d8d;
+      --shadow-sm:0 4px 14px rgba(0,0,0,.2);
+      --shadow-lg:0 20px 56px rgba(0,0,0,.35);
+    }
+
+    /* ── Reset & base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box }
+    html { scroll-behavior: smooth }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: 1.6;
+      background:
+        radial-gradient(circle at top right, rgba(255,209,102,.22), transparent 25%),
+        radial-gradient(circle at 0% 0%, rgba(188,90,23,.1), transparent 28%),
+        var(--color-bg);
+      color: var(--color-text);
+      transition: background .25s, color .25s;
+    }
+    a { color: inherit }
+    button, input, select, textarea { font: inherit }
+    img, svg { display: block; max-width: 100% }
+
+    /* ── Skip link ────────────────────────────────────────────────── */
+    .skip { position: absolute; left: -9999px }
+    .skip:focus {
+      left: 1rem; top: 1rem;
+      background: var(--color-primary); color: #fff;
+      padding: .75rem 1rem; border-radius: .75rem; z-index: 999;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────── */
+    .container { width: min(1160px, calc(100% - 2rem)); margin: 0 auto }
+
+    /* ── Header / Nav ─────────────────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .nav {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem;
+      padding: 1rem 0;
+    }
+    .brand {
+      display: flex; align-items: center; gap: .8rem;
+      text-decoration: none; font-weight: 800;
+    }
+    .brand svg { width: 44px; height: 44px }
+    .menu {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .menu a {
+      text-decoration: none; color: var(--color-text-muted);
+      font-weight: 600; transition: color .15s;
+    }
+    .menu a:hover { color: var(--color-primary) }
+    .nav-right { display: flex; align-items: center; gap: .6rem }
+    .theme, .hamburger {
+      min-width: 44px; min-height: 44px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      cursor: pointer; display: grid; place-items: center;
+      font-size: 1.1rem;
+    }
+    .hamburger { display: none; flex-direction: column;
+      justify-content: center; align-items: center; gap: 5px; padding: 10px }
+    .hamburger span {
+      display: block; width: 20px; height: 2px;
+      background: var(--color-text); border-radius: 2px;
+      transition: transform .25s, opacity .25s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg) }
+    .hamburger.open span:nth-child(2) { opacity: 0 }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg) }
+
+    /* mobile drawer */
+    .mobile-nav {
+      display: none;
+      position: fixed; inset: 0; z-index: 49;
+      background: color-mix(in srgb, var(--color-bg) 96%, transparent);
+      backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem;
+    }
+    .mobile-nav.open { display: flex }
+    .mobile-nav a {
+      text-decoration: none; font-weight: 700;
+      font-family: var(--font-display);
+      font-size: 1.5rem; color: var(--color-text);
+      transition: color .15s;
+    }
+    .mobile-nav a:hover { color: var(--color-primary) }
+
+    /* ── Hero ─────────────────────────────────────────────────────── */
+    .hero { padding: 4rem 0 2rem }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.1fr .9fr;
+      gap: 1.4rem; align-items: start;
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: .55rem;
+      background: var(--color-surface-2); border: 1px solid var(--color-border);
+      padding: .55rem .85rem; border-radius: var(--radius-full);
+      font-size: var(--text-sm); font-weight: 700;
+    }
+    .dot {
+      width: .6rem; height: .6rem; border-radius: 50%;
+      background: var(--color-primary);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1) }
+      50% { opacity: .6; transform: scale(.85) }
+    }
+    h1, h2, h3 { font-family: var(--font-display); line-height: 1.04; margin: 0 0 1rem }
+    h1 { font-size: var(--text-2xl); max-width: 10ch; letter-spacing: -.03em }
+    h2 { font-size: var(--text-xl) }
+    h3 { font-size: var(--text-lg) }
+    p { margin: .15rem 0 1rem; max-width: 72ch }
+    .muted { color: var(--color-text-muted) }
+    .lead { font-size: clamp(1.05rem,1rem + .4vw,1.3rem); max-width: 58ch }
+    .cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem; margin-bottom: 1.5rem }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: .55rem; text-decoration: none; font-weight: 800;
+      padding: 1rem 1.4rem; border-radius: var(--radius-full);
+      min-height: 46px; border: 1px solid transparent;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg) }
+    .btn.primary { background: var(--color-primary); color: #fff }
+    .btn.primary:hover { background: var(--color-primary-hover) }
+    .btn.secondary { background: var(--color-surface); border-color: var(--color-border) }
+
+    /* hero card */
+    .hero-card, .card, .panel {
+      background: linear-gradient(180deg, var(--color-surface), var(--color-surface-2));
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+    .hero-card { padding: 1.25rem; position: sticky; top: 5rem; }
+    .hero-badges { display: grid; grid-template-columns: repeat(3,1fr); gap: .8rem; margin-top: 1rem }
+    .badge-stat {
+      padding: 1rem; border-radius: 1rem;
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .badge-stat:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm) }
+    .badge-stat strong { display: block; font-family: var(--font-display); font-size: 1.25rem }
+
+    /* event banner */
+    .event-banner {
+      margin-top: 1.5rem; padding: 1rem 1.2rem;
+      border-radius: 1.2rem;
+      background: linear-gradient(135deg, rgba(188,90,23,.16), rgba(255,209,102,.22));
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+    }
+    .event-banner-inner { display: grid; gap: .35rem }
+    .event-label {
+      margin: 0; font-size: var(--text-xs); font-weight: 800;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--color-primary);
+    }
+    .event-banner h3 { margin: 0; font-size: clamp(1.2rem,1rem + 1vw,1.7rem) }
+    .event-banner p { margin: 0; color: var(--color-text-muted) }
+
+    /* ── Sections ─────────────────────────────────────────────────── */
+    section { padding: 2rem 0; scroll-margin-top: 90px }
+    .section-head {
+      display: flex; justify-content: space-between;
+      gap: 1rem; align-items: end; margin-bottom: 1rem;
+    }
+
+    /* ── Grids ────────────────────────────────────────────────────── */
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem }
+    .cards-tight { display: grid; grid-template-columns: repeat(4,1fr); gap: .9rem }
+    .route { display: grid; grid-template-columns: 1.1fr .9fr; gap: 1rem }
+    .card {
+      padding: 1.2rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg) }
+
+    /* ── Timeline / Steps ─────────────────────────────────────────── */
+    .timeline { display: grid; gap: .85rem }
+    .step {
+      display: grid; grid-template-columns: auto 1fr;
+      gap: .9rem; padding: 1rem; border-radius: 1rem;
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      transition: transform .2s;
+    }
+    .step:hover { transform: translateX(4px) }
+    .num {
+      width: 2rem; height: 2rem;
+      display: grid; place-items: center;
+      border-radius: 999px; background: var(--color-primary);
+      color: #fff; font-weight: 800;
+    }
+
+    /* ── Map ──────────────────────────────────────────────────────── */
+    #course-map {
+      width: 100%; height: 300px;
+      border-radius: 1rem;
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+      margin-top: 1.25rem;
+    }
+    .strava-link-row {
+      display: flex; justify-content: flex-end; margin-top: .6rem;
+    }
+
+    /* ── Registration ─────────────────────────────────────────────── */
+    .pricing { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.1rem; margin-bottom: 1.5rem }
+    .price-card {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      padding: 1.25rem; border-radius: 1.15rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .price-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm) }
+    .price { font-family: var(--font-display); font-size: 2rem }
+    .tag {
+      display: inline-block; background: var(--color-surface-3);
+      padding: .3rem .6rem; border-radius: 999px;
+      font-size: var(--text-xs); font-weight: 800; margin-bottom: .65rem;
+    }
+    .donation { display: grid; grid-template-columns: 1fr .95fr; gap: 1rem; margin-top: 1.25rem }
+    .form-wrap {
+      padding: 1.3rem; border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(188,90,23,.15), rgba(255,209,102,.24));
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-lg);
+    }
+    form { display: grid; gap: .85rem }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem }
+    label { display: block; font-size: var(--text-sm); font-weight: 800; margin-bottom: .4rem }
+    input, select, textarea {
+      width: 100%; padding: .95rem 1rem;
+      border-radius: .9rem; border: 1px solid var(--color-border);
+      background: var(--color-surface); color: var(--color-text);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(188,90,23,.15);
+    }
+    textarea { min-height: 100px; resize: vertical }
+    .fine { font-size: var(--text-sm); color: var(--color-text-muted) }
+    .waiver {
+      padding: 1rem; border-radius: 1rem;
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      max-height: 220px; overflow: auto;
+    }
+
+    /* ── FAQ accordion ────────────────────────────────────────────── */
+    .faq-list { display: grid; gap: .6rem }
+    .faq-item {
+      border: 1px solid var(--color-border);
+      border-radius: 1rem; overflow: hidden;
+      background: var(--color-surface);
+    }
+    .faq-q {
+      width: 100%; background: none; border: none;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 1rem; padding: 1rem 1.2rem;
+      font-weight: 700; font-size: var(--text-base);
+      cursor: pointer; text-align: left; color: var(--color-text);
+      transition: background .15s;
+    }
+    .faq-q:hover { background: var(--color-surface-2) }
+    .faq-q svg {
+      flex-shrink: 0; transition: transform .25s;
+      width: 18px; height: 18px;
+    }
+    .faq-item.open .faq-q svg { transform: rotate(180deg) }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height .3s ease, padding .3s ease;
+      padding: 0 1.2rem;
+    }
+    .faq-item.open .faq-a { max-height: 400px; padding: 0 1.2rem 1rem }
+
+    /* ── Volunteer ────────────────────────────────────────────────── */
+    .checkin { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .8rem }
+    .mini {
+      padding: 1rem; border-radius: 1rem;
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .mini:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm) }
+
+    /* ── Table ────────────────────────────────────────────────────── */
+    table {
+      width: 100%; border-collapse: collapse;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 1rem; overflow: hidden;
+    }
+    th, td {
+      padding: .95rem; border-bottom: 1px solid var(--color-border);
+      text-align: left; vertical-align: top;
+    }
+    th { background: var(--color-surface-2); font-family: var(--font-display) }
+
+    /* ── Lists ────────────────────────────────────────────────────── */
+    .list { padding-left: 1.1rem }
+    .list li { margin: .45rem 0 }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    footer { padding: 2.5rem 0 4rem; color: var(--color-text-muted) }
+    .footer-inner {
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .social-links { display: flex; gap: .75rem }
+    .social-link {
+      display: grid; place-items: center;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      text-decoration: none;
+      transition: transform .15s, border-color .15s;
+    }
+    .social-link:hover { transform: translateY(-2px); border-color: var(--color-primary) }
+
+    /* ── Active nav ───────────────────────────────────────────────── */
+    .menu a.nav-active { color: var(--color-primary) }
+
+    /* ── Back to top ──────────────────────────────────────────────── */
+    #backToTop {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 40;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--color-primary); color: #fff;
+      border: none; cursor: pointer;
+      display: grid; place-items: center;
+      box-shadow: var(--shadow-lg);
+      opacity: 0; transform: translateY(8px);
+      transition: opacity .25s, transform .25s, background .15s;
+      pointer-events: none;
+    }
+    #backToTop.visible { opacity: 1; transform: none; pointer-events: auto }
+    #backToTop:hover { background: var(--color-primary-hover) }
+
+    /* ── Form validation ──────────────────────────────────────────── */
+    .field-wrap { position: relative }
+    .field-err {
+      display: none; font-size: var(--text-xs);
+      color: var(--color-danger); margin-top: .3rem; font-weight: 600;
+    }
+    .field-wrap.invalid .field-err { display: block }
+    .field-wrap.invalid input,
+    .field-wrap.invalid select,
+    .field-wrap.invalid textarea {
+      border-color: var(--color-danger);
+      box-shadow: 0 0 0 3px rgba(157,43,43,.12);
+    }
+    .field-wrap.valid input,
+    .field-wrap.valid select {
+      border-color: var(--color-success);
+      box-shadow: 0 0 0 3px rgba(44,122,70,.1);
+    }
+
+    /* ── Scroll-reveal ────────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease }
+    .reveal.visible { opacity: 1; transform: none }
+
+    /* ── Responsive ───────────────────────────────────────────────── */
+    @media (max-width: 980px) {
+      .hero-grid, .route, .donation, .grid-2, .grid-3,
+      .pricing, .cards-tight, .checkin, .row { grid-template-columns: 1fr }
+      .hero-badges { grid-template-columns: 1fr 1fr }
+      .menu { display: none }
+      .hamburger { display: flex }
+    }
+    @media (max-width: 560px) {
+      .hero { padding-top: 2rem }
+      .hero-badges { grid-template-columns: 1fr }
+      .footer-inner { flex-direction: column; text-align: center }
+    }
+  </style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+
+<!-- Mobile nav overlay -->
+<nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+  <a href="#about" class="mobile-nav-link">About</a>
+  <a href="#register" class="mobile-nav-link">Register</a>
+  <a href="#faq" class="mobile-nav-link">FAQ</a>
+  <a href="#volunteer" class="mobile-nav-link">Volunteer / Sponsor</a>
+  <a href="#contact" class="mobile-nav-link">Contact</a>
+</nav>
+
+<header>
+  <div class="container nav">
+    <a href="#top" class="brand" aria-label="Donut Dash home">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="6"/>
+        <circle cx="32" cy="32" r="9" fill="none" stroke="currentColor" stroke-width="6"/>
+        <circle cx="21" cy="24" r="2.5" fill="currentColor"/>
+        <circle cx="42" cy="22" r="2.5" fill="currentColor"/>
+        <circle cx="45" cy="38" r="2.5" fill="currentColor"/>
+        <path d="M15 34c7 9 27 9 34 0" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span>Donut Dash Official</span>
+    </a>
+    <nav class="menu" aria-label="Primary">
+      <a href="#about">About</a>
+      <a href="#register">Register</a>
+      <a href="#faq">FAQ</a>
+      <a href="#volunteer">Volunteer / Sponsor</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <button class="theme" data-theme-toggle aria-label="Toggle theme">◐</button>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="content">
+
+  <!-- ── Hero ─────────────────────────────────────────────────────── -->
+  <section class="hero" id="top">
+    <div class="container hero-grid">
+      <div>
+        <div class="pill"><span class="dot"></span> Student-led out-and-back trail fundraiser</div>
+        <h1>Run for donuts. Give for SLO.</h1>
+        <p class="lead">Donut Dash is a community run and canned food drive benefiting SLO Food Bank, starting and finishing at the Avila Beach Drive entrance to the Bob Jones Trail.</p>
+        <p class="muted">Only paid runners receive an official number, name sticker, and timed entry. Prepaid runners get pre-made check-in stickers; race-day cash entries can be printed on site.</p>
+        <p><strong>All proceeds from this fundraiser go directly to SLO Food Bank.</strong></p>
+
+        <div class="event-banner">
+          <div class="event-banner-inner">
+            <p class="event-label">Race Day Info</p>
+            <h3>June TBD &bull; Check in at 10:00 AM</h3>
+            <p>Meet at the Avila Beach Drive entrance to the Bob Jones Trail at 10:00 AM. Race begins promptly at 11:00 AM. Post-run celebration at the pirate ship park in Avila Beach.</p>
+          </div>
+        </div>
+
+        <div class="cta">
+          <a class="btn primary" href="#register">Register now</a>
+          <a class="btn secondary" href="#faq">How it works</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <h3>Event snapshot</h3>
+        <p>Out-and-back run on the Bob Jones City-to-the-Sea Trail. Roughly 3 miles on a flat, paved path — open to all ages and paces. Canned food collection, race-day check-in, and donuts at the finish.</p>
+        <div class="hero-badges">
+          <div class="badge-stat"><strong>$10</strong><span class="muted">Ages 15–64</span></div>
+          <div class="badge-stat"><strong>$5</strong><span class="muted">Youth &amp; Seniors</span></div>
+          <div class="badge-stat"><strong>~3 mi</strong><span class="muted">Flat paved trail</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── About / Event Details ─────────────────────────────────────── -->
+  <section id="about">
+    <div class="container">
+      <div class="section-head">
+        <h2>Event details</h2>
+      </div>
+      <div class="cards-tight">
+        <article class="card reveal">
+          <h3>🍩 Cause</h3>
+          <p>Benefiting SLO Food Bank through cash donations and canned food collection. <strong>All proceeds go directly to SLO Food Bank.</strong></p>
+        </article>
+        <article class="card reveal">
+          <h3>🏃 Distance</h3>
+          <p>Out-and-back along the Bob Jones Trail from the Avila Beach Drive entrance — roughly 3 miles total at your own pace.</p>
+        </article>
+        <article class="card reveal">
+          <h3>🏁 Finish line</h3>
+          <p>Every runner finishes at the Avila Beach Drive entrance, then walks to Avila Beach Community Park (pirate ship playground) to celebrate with donuts.</p>
+        </article>
+        <article class="card reveal">
+          <h3>📋 Check-in</h3>
+          <p>Paid runners check in near the trail entrance and receive a name sticker and official timing placement.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Race-day flow + Course map ───────────────────────────────── -->
+  <section>
+    <div class="container route">
+      <div class="panel card">
+        <h2>Race-day flow</h2>
+        <div class="timeline">
+          <div class="step reveal">
+            <div class="num">1</div>
+            <div>
+              <h3>Check in</h3>
+              <p>Arrive at the Bob Jones Trail entrance off Avila Beach Drive, find your name, confirm waiver status, and pick up your race sticker packet.</p>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="num">2</div>
+            <div>
+              <h3>Donate food</h3>
+              <p>Drop canned goods at the collection table before you head out onto the trail.</p>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="num">3</div>
+            <div>
+              <h3>Run your race</h3>
+              <p>Follow the Bob Jones Trail from the Avila Beach Drive entrance, run 1.5 miles out to the marked turnaround, then head 1.5 miles back to the finish.</p>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="num">4</div>
+            <div>
+              <h3>Celebrate</h3>
+              <p>After you finish, walk to the pirate ship park at Avila Beach Community Park for donuts, photos, and the final fundraising total.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel card">
+        <h2>Course map</h2>
+        <p>The course is a simple out-and-back on the paved Bob Jones City-to-the-Sea Trail.</p>
+        <ul class="list">
+          <li><strong>Start / Finish:</strong> Bob Jones Trail entrance off Avila Beach Drive</li>
+          <li><strong>Route:</strong> Out-and-back (~1.5 mi out, 1.5 mi back)</li>
+          <li><strong>Post-run:</strong> Walk to the pirate ship playground at Avila Beach Community Park</li>
+          <li><strong>Flat, paved path</strong> — all paces and ages welcome</li>
+          <li><strong>Volunteers</strong> along the trail for directions and support</li>
+        </ul>
+        <!-- Interactive Leaflet map — route drawn from actual GPX data -->
+        <div id="course-map" role="img" aria-label="Interactive course map showing the Bob Jones Trail out-and-back route"></div>
+        <div class="strava-link-row">
+          <a class="btn secondary" style="font-size:var(--text-sm);padding:.6rem 1rem;"
+             href="https://www.strava.com/routes/3493437057712262280"
+             target="_blank" rel="noopener noreferrer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#fc4c02"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+            View route on Strava
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Registration ──────────────────────────────────────────────── -->
+  <section id="register">
+    <div class="container">
+      <h2>Registration</h2>
+      <p>
+        <strong>Online donations go directly through our SLO Food Bank fundraiser.</strong>
+        All ticket payments are processed through the SLO Food Bank online fundraiser,
+        and <strong>all cash donations collected at the event are also donated to SLO Food Bank.</strong>
+        Use the button below to donate securely with card or a supported digital wallet.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="https://donate.slofoodbank.org/fundraiser/7310746/dashboard/overview"
+           target="_blank" rel="noopener noreferrer">
+          Donate to SLO Food Bank ↗
+        </a>
+      </div>
+
+      <div class="pricing">
+        <div class="price-card reveal">
+          <div class="tag">Youth</div>
+          <div class="price">$5</div>
+          <p>Runners age 14 and under.</p>
+        </div>
+        <div class="price-card reveal">
+          <div class="tag">Adult</div>
+          <div class="price">$10</div>
+          <p>Runners ages 15–64.</p>
+        </div>
+        <div class="price-card reveal">
+          <div class="tag">Senior</div>
+          <div class="price">$5</div>
+          <p>Runners age 65 and older.</p>
+        </div>
+      </div>
+
+      <div class="donation">
+        <div class="form-wrap">
+          <h3>Official signup form</h3>
+          <p class="fine">This information is needed for your sticker and race-day check-in.</p>
+
+          <form id="regForm" action="https://formspree.io/f/mnjrdbvk" method="POST">
+            <div class="row">
+              <div class="field-wrap" id="wrap-firstName">
+                <label for="firstName">First name</label>
+                <input id="firstName" name="firstName" required placeholder="Jane">
+                <span class="field-err">First name is required.</span>
+              </div>
+              <div class="field-wrap" id="wrap-lastName">
+                <label for="lastName">Last name</label>
+                <input id="lastName" name="lastName" required placeholder="Doe">
+                <span class="field-err">Last name is required.</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field-wrap" id="wrap-email">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required placeholder="you@example.com">
+                <span class="field-err">Please enter a valid email address.</span>
+              </div>
+              <div>
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" placeholder="(805) 555-5555">
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="raceType">Race option</label>
+                <select id="raceType" name="raceType">
+                  <option>Bob Jones Trail run (out-and-back)</option>
+                </select>
+              </div>
+              <div class="field-wrap" id="wrap-age">
+                <label for="age">Age</label>
+                <input id="age" name="age" type="number" min="1" max="120" required placeholder="16">
+                <span class="field-err">Please enter a valid age (1–120).</span>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="paymentType">Payment</label>
+                <select id="paymentType" name="paymentType">
+                  <option>Donate through SLO Food Bank fundraiser</option>
+                  <option>Cash at event</option>
+                </select>
+              </div>
+              <div>
+                <label for="fee">Registration fee</label>
+                <input id="fee" name="fee" readonly placeholder="Auto-calculated">
+              </div>
+            </div>
+            <div>
+              <label for="foodCount">Estimated canned items</label>
+              <input id="foodCount" name="foodCount" type="number" min="0" placeholder="3">
+            </div>
+            <div>
+              <label for="notes">Notes</label>
+              <textarea id="notes" name="notes" placeholder="Emergency contact, sponsor note, or registration question"></textarea>
+            </div>
+            <div class="waiver">
+              <strong>Online payment info</strong>
+              <p class="fine">If you pay online through the SLO Food Bank fundraiser, please bring the receipt email or a screenshot to race check-in so we can confirm your payment and mark your registration as paid.</p>
+            </div>
+            <button class="btn primary" type="submit" id="submitBtn">Submit Registration</button>
+          </form>
+        </div>
+
+        <div class="panel card">
+          <h3>What gets printed at check-in</h3>
+          <ul class="list">
+            <li>Runner name</li>
+            <li>Age</li>
+            <li>Bob Jones out-and-back designation</li>
+            <li>Paid or cash-collected status</li>
+          </ul>
+          <h3 style="margin-top:1.4rem;">Check-in table setup</h3>
+          <ul class="list">
+            <li>Table 1: Waiver and name lookup</li>
+            <li>Table 2: Cash payments and on-site entries</li>
+            <li>Table 3: Race sticker handout and canned food drop-off</li>
+          </ul>
+          <p class="fine">
+            If you pay online, bring the SLO Food Bank receipt email or a screenshot
+            so we can confirm your payment at check-in.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ──────────────────────────────────────────────────────── -->
+  <section id="faq">
+    <div class="container">
+      <h2>Frequently asked questions</h2>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Do I need to pay to run?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a">
+            <p>Yes. Official race stickers and timed placement are only for paid registrations. Unpaid participants are welcome to run, but will not receive an official number or finish time.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            How can I pay online?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a">
+            <p>Use the <strong>Donate to SLO Food Bank</strong> button above. It takes you directly to our fundraiser page where you can pay securely by card or digital wallet.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Can I pay cash on race day?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a">
+            <p>Yes! Race-day cash registration is processed at Table 2 during check-in. Your sticker can be printed on site.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Why do you collect age?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a">
+            <p>Age is used to calculate the correct registration fee ($5 for youth 14 & under and seniors 65+; $10 for adults) and is also printed on your sticker for race-day organization.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Where exactly does the race start?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a">
+            <p>The start and finish line is at the Avila Beach Drive entrance to the Bob Jones City-to-the-Sea Trail in Avila Beach, CA. See the interactive map above for the full route.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Where do the donuts happen?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a">
+            <p>After you cross the finish line at the trail entrance, walk over to <strong>Avila Beach Community Park</strong> — the one with the pirate ship playground. That's where we'll celebrate, count the canned food totals, and hand out donuts.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Can I bring a dog or stroller?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a">
+            <p>The Bob Jones Trail is paved and flat, making it stroller-friendly. Dogs on leash are permitted on the trail per County of SLO guidelines — just be mindful of other runners during the event.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Volunteer ─────────────────────────────────────────────────── -->
+  <section id="volunteer">
+    <div class="container">
+      <h2>Volunteer roles</h2>
+      <p>We need a small crew to make the event run smoothly. Volunteering is a great way to support the cause without registering as a runner.</p>
+      <div class="checkin">
+        <div class="mini reveal">
+          <h3>Check-in crew</h3>
+          <p>Name lookup, waiver confirmation, and sticker packet handoff at the entrance tables.</p>
+        </div>
+        <div class="mini reveal">
+          <h3>Course marshals</h3>
+          <p>Direct runners at key turns, keep the turnaround clear, and cheer people on!</p>
+        </div>
+        <div class="mini reveal">
+          <h3>Food + finish team</h3>
+          <p>Collect cans, count totals, and hand out donuts at the pirate ship park.</p>
+        </div>
+      </div>
+      <p style="margin-top:1rem;">Interested in volunteering? Email <a href="mailto:donutdash2026@gmail.com" style="color:var(--color-primary);font-weight:600;">donutdash2026@gmail.com</a></p>
+    </div>
+  </section>
+
+  <!-- ── Sponsorship ───────────────────────────────────────────────── -->
+  <section id="sponsorship">
+    <div class="container">
+      <h2>Sponsorship</h2>
+      <p>Local businesses and community partners can support Donut Dash — help us raise more for SLO Food Bank by sponsoring event costs, providing refreshments, or contributing directly to the fundraiser.</p>
+      <div class="grid-3">
+        <div class="card reveal">
+          <h3>🥇 Title sponsor</h3>
+          <p>Logo at the top of the website, on event signage, and in race-day announcements. Ideal for a business that wants to be the main presenting supporter.</p>
+        </div>
+        <div class="card reveal">
+          <h3>🥈 Supporting sponsor</h3>
+          <p>Logo on the site, volunteer shirts, or finish-line signage, plus a shout-out at the start and finish of the race.</p>
+        </div>
+        <div class="card reveal">
+          <h3>🍩 In-kind sponsor</h3>
+          <p>Provide donuts, coffee, water, or supplies. In-kind sponsors are listed on the site and thanked at the event.</p>
+        </div>
+      </div>
+      <p class="fine" style="margin-top:1rem;">
+        Interested in sponsoring Donut Dash? Email
+        <a href="mailto:donutdash2026@gmail.com" style="color:var(--color-primary);font-weight:600;">donutdash2026@gmail.com</a>
+        to talk about options that work for your business.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Contact ───────────────────────────────────────────────────── -->
+  <section id="contact">
+    <div class="container grid-2">
+      <div class="card">
+        <h2>Contact</h2>
+        <p>Event contact for Donut Dash:</p>
+        <p><strong>Donut Dash</strong><br>
+          <a href="mailto:donutdash2026@gmail.com" style="color:var(--color-primary);font-weight:600;">donutdash2026@gmail.com</a>
+        </p>
+        <p>Beneficiary contact for donation coordination:</p>
+        <p>
+          <strong>SLO Food Bank</strong><br>
+          1180 Kendall Road, San Luis Obispo, CA 93401<br>
+          (805) 238-4664
+        </p>
+        <p class="fine">SLO Food Bank in-person food donation hours: Mon–Fri, 9:30 a.m. – 4:00 p.m.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<button id="backToTop" aria-label="Back to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<footer>
+  <div class="container footer-inner">
+    <p>Donut Dash — a community fundraiser benefiting <strong>SLO Food Bank</strong>. All proceeds go directly to SLO Food Bank.</p>
+    <div class="social-links">
+      <a class="social-link" href="mailto:donutdash2026@gmail.com" aria-label="Email">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+      </a>
+      <a class="social-link" href="https://donate.slofoodbank.org/fundraiser/7310746/dashboard/overview" target="_blank" rel="noopener noreferrer" aria-label="Donate">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Theme toggle ─────────────────────────────────────────────── */
+  const root = document.documentElement;
+  const toggleBtn = document.querySelector('[data-theme-toggle]');
+  let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  root.setAttribute('data-theme', theme);
+  toggleBtn.addEventListener('click', function () {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', theme);
+  });
+
+  /* ── Hamburger menu ───────────────────────────────────────────── */
+  const hamburger = document.getElementById('hamburgerBtn');
+  const mobileNav = document.getElementById('mobileNav');
+  hamburger.addEventListener('click', function () {
+    const isOpen = mobileNav.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  document.querySelectorAll('.mobile-nav-link').forEach(function (link) {
+    link.addEventListener('click', function () {
+      mobileNav.classList.remove('open');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+
+  /* ── Form validation helpers ──────────────────────────────────── */
+  function setValid(wrap) {
+    wrap.classList.remove('invalid');
+    wrap.classList.add('valid');
+  }
+  function setInvalid(wrap) {
+    wrap.classList.remove('valid');
+    wrap.classList.add('invalid');
+  }
+  function clearState(wrap) {
+    wrap.classList.remove('valid', 'invalid');
+  }
+
+  const validators = {
+    firstName: function (v) { return v.trim().length > 0; },
+    lastName:  function (v) { return v.trim().length > 0; },
+    email:     function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); },
+    age:       function (v) { var n = parseInt(v, 10); return Number.isFinite(n) && n >= 1 && n <= 120; }
+  };
+
+  function validateField(id) {
+    var el   = document.getElementById(id);
+    var wrap = document.getElementById('wrap-' + id);
+    if (!el || !wrap) return true;
+    var ok = validators[id](el.value);
+    ok ? setValid(wrap) : setInvalid(wrap);
+    return ok;
+  }
+
+  ['firstName', 'lastName', 'email', 'age'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('blur',  function () { if (el.value !== '') validateField(id); });
+    el.addEventListener('input', function () {
+      var wrap = document.getElementById('wrap-' + id);
+      if (wrap && wrap.classList.contains('invalid')) validateField(id);
+    });
+  });
+
+  /* ── Netlify form AJAX submit ─────────────────────────────────── */
+  const regForm = document.getElementById('regForm');
+  regForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var allValid = ['firstName', 'lastName', 'email', 'age'].every(validateField);
+    if (!allValid) {
+      var firstBad = regForm.querySelector('.field-wrap.invalid input, .field-wrap.invalid select');
+      if (firstBad) firstBad.focus();
+      return;
+    }
+    var submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    var data = new FormData(regForm);
+    fetch('https://formspree.io/f/mnjrdbvk', {
+      method: 'POST', body: data, headers: { 'Accept': 'application/json' }
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Network response was not ok');
+        regForm.innerHTML =
+          '<div style="text-align:center;padding:2rem 1rem">' +
+          '<div style="font-size:2.5rem;margin-bottom:.75rem">🍩</div>' +
+          '<h3 style="margin-bottom:.5rem">You\'re registered!</h3>' +
+          '<p style="color:var(--color-text-muted);max-width:38ch;margin:0 auto">' +
+          'We\'ll see you on race day. Bring your receipt or payment confirmation to check-in.</p>' +
+          '</div>';
+      })
+      .catch(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Registration';
+        alert('Something went wrong — please try again or email donutdash2026@gmail.com');
+      });
+  });
+
+  /* ── Fee calculator ───────────────────────────────────────────── */
+  const ageEl = document.getElementById('age');
+  const feeEl = document.getElementById('fee');
+  function updateFee() {
+    const a = parseInt(ageEl.value, 10);
+    feeEl.value = (!Number.isFinite(a) || a < 1) ? '' : (a <= 14 || a >= 65) ? '$5.00' : '$10.00';
+  }
+  ageEl.addEventListener('input', updateFee);
+  updateFee();
+
+  /* ── FAQ accordion ────────────────────────────────────────────── */
+  document.querySelectorAll('.faq-q').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(isOpen));
+    });
+  });
+
+  /* ── Active nav on scroll ─────────────────────────────────────── */
+  var navLinks = document.querySelectorAll('.menu a[href^="#"]');
+  var sections = Array.from(navLinks).map(function (a) {
+    return document.querySelector(a.getAttribute('href'));
+  });
+  var navObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      navLinks.forEach(function (a) { a.classList.remove('nav-active'); });
+      var idx = sections.indexOf(entry.target);
+      if (idx !== -1 && navLinks[idx]) navLinks[idx].classList.add('nav-active');
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(function (s) { if (s) navObserver.observe(s); });
+
+  /* ── Back to top button ───────────────────────────────────────── */
+  var backBtn = document.getElementById('backToTop');
+  window.addEventListener('scroll', function () {
+    backBtn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  backBtn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ── Leaflet course map ───────────────────────────────────────── */
+  const gpxCoords = [
+    [35.18063,-120.73590],[35.18068,-120.73588],[35.18092,-120.73546],
+    [35.18130,-120.73468],[35.18167,-120.73390],[35.18189,-120.73358],
+    [35.18198,-120.73353],[35.18224,-120.73340],[35.18243,-120.73327],
+    [35.18245,-120.73322],[35.18248,-120.73296],[35.18255,-120.73285],
+    [35.18308,-120.73254],[35.18361,-120.73223],[35.18368,-120.73221],
+    [35.18392,-120.73251],[35.18401,-120.73255],[35.18411,-120.73251],
+    [35.18417,-120.73233],[35.18418,-120.73219],[35.18415,-120.73193],
+    [35.18401,-120.73121],[35.18386,-120.73049],[35.18346,-120.72994],
+    [35.18315,-120.72942],[35.18309,-120.72918],[35.18310,-120.72901],
+    [35.18321,-120.72824],[35.18333,-120.72746],[35.18344,-120.72669],
+    [35.18353,-120.72637],[35.18369,-120.72611],[35.18391,-120.72589],
+    [35.18416,-120.72575],[35.18433,-120.72571],[35.18514,-120.72571],
+    [35.18598,-120.72596],[35.18682,-120.72621],[35.18718,-120.72624],
+    [35.18742,-120.72620],[35.18765,-120.72611],[35.18800,-120.72596],
+    [35.18834,-120.72550],[35.18868,-120.72503],[35.18908,-120.72423],
+    [35.18917,-120.72346],[35.18916,-120.72252],[35.18912,-120.72190],
+    [35.18905,-120.72173],[35.18907,-120.72137],[35.18902,-120.72087],
+    [35.18885,-120.71995],[35.18873,-120.71957],[35.18873,-120.71945],
+    [35.18879,-120.71940],[35.18879,-120.71927],[35.18872,-120.71919],
+    [35.18865,-120.71917],[35.18857,-120.71903],[35.18852,-120.71868],
+    [35.18852,-120.71870],[35.18857,-120.71903],[35.18865,-120.71917],
+    [35.18872,-120.71919],[35.18879,-120.71927],[35.18879,-120.71940],
+    [35.18873,-120.71945],[35.18873,-120.71957],[35.18885,-120.71995],
+    [35.18902,-120.72087],[35.18907,-120.72137],[35.18905,-120.72173],
+    [35.18912,-120.72190],[35.18916,-120.72252],[35.18917,-120.72346],
+    [35.18908,-120.72423],[35.18868,-120.72503],[35.18834,-120.72550],
+    [35.18800,-120.72596],[35.18765,-120.72611],[35.18742,-120.72620],
+    [35.18718,-120.72624],[35.18682,-120.72621],[35.18598,-120.72596],
+    [35.18514,-120.72571],[35.18433,-120.72571],[35.18416,-120.72575],
+    [35.18391,-120.72589],[35.18369,-120.72611],[35.18353,-120.72637],
+    [35.18344,-120.72669],[35.18333,-120.72746],[35.18321,-120.72824],
+    [35.18310,-120.72901],[35.18309,-120.72918],[35.18315,-120.72942],
+    [35.18346,-120.72994],[35.18386,-120.73049],[35.18401,-120.73121],
+    [35.18415,-120.73193],[35.18418,-120.73219],[35.18417,-120.73233],
+    [35.18411,-120.73251],[35.18401,-120.73255],[35.18392,-120.73251],
+    [35.18368,-120.73221],[35.18361,-120.73223],[35.18308,-120.73254],
+    [35.18255,-120.73285],[35.18248,-120.73296],[35.18245,-120.73322],
+    [35.18243,-120.73327],[35.18224,-120.73340],[35.18198,-120.73353],
+    [35.18189,-120.73358],[35.18167,-120.73390],[35.18130,-120.73468],
+    [35.18092,-120.73546],[35.18068,-120.73588],[35.18063,-120.73590]
+  ];
+
+  function initMap() {
+    if (typeof L === 'undefined') return;
+    const mapEl = document.getElementById('course-map');
+    if (!mapEl) return;
+    const map = L.map('course-map', { zoomControl: true, scrollWheelZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18
+    }).addTo(map);
+    const primaryColor = '#bc5a17';
+    const polyline = L.polyline(gpxCoords, {
+      color: primaryColor, weight: 4, opacity: .85, lineCap: 'round', lineJoin: 'round'
+    }).addTo(map);
+    const startFinish = gpxCoords[0];
+    const turnaround  = gpxCoords[Math.floor(gpxCoords.length / 2)];
+    L.circleMarker(startFinish, {
+      radius: 9, fillColor: primaryColor, color: '#fff', weight: 2.5, fillOpacity: 1
+    }).addTo(map).bindPopup('<strong>Start / Finish</strong><br>Avila Beach Drive entrance to Bob Jones Trail');
+    L.circleMarker(turnaround, {
+      radius: 7, fillColor: '#ffd166', color: primaryColor, weight: 2.5, fillOpacity: 1
+    }).addTo(map).bindPopup('<strong>Turnaround point</strong><br>~1.5 miles from start');
+    map.fitBounds(polyline.getBounds(), { padding: [20, 20] });
+  }
+  if (typeof L !== 'undefined') { initMap(); }
+  window.addEventListener('load', initMap);
+
+  /* ── Scroll-reveal ────────────────────────────────────────────── */
+  const revealObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { revealObserver.observe(el); });
+
+
+})();
+</script>
+</body>
+</html>
