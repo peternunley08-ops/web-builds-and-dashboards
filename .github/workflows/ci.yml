@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify-web-builds:
+    name: Verify JS Syntax & Local Assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check Northstar Paws automation script syntax
+        run: node --check northstar-paws/automation/test-order.js
+
+      - name: Extract and verify inline <script> blocks & local assets
+        run: |
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+            const vm = require("vm");
+
+            const htmlFiles = [
+              "donut-dash/index.html",
+              "northstar-paws/index.html",
+              "money-dashboard/index.html",
+              "command-center-ui/index.html"
+            ];
+
+            for (const rel of htmlFiles) {
+              if (!fs.existsSync(rel)) {
+                throw new Error("Missing HTML file: " + rel);
+              }
+              const html = fs.readFileSync(rel, "utf8");
+              const scriptRegex = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+              let match;
+              let idx = 0;
+              while ((match = scriptRegex.exec(html)) !== null) {
+                const attrs = match[1] || "";
+                const code = match[2] || "";
+                if (/\bsrc\s*=/i.test(attrs)) continue;
+                if (/application\/(ld\+json|json)/i.test(attrs)) continue;
+                idx++;
+                new vm.Script(code, { filename: rel + "#script-" + idx });
+              }
+              console.log("✓ Verified " + idx + " inline script block(s) in " + rel);
+
+              const dir = path.dirname(rel);
+              const attrRegex = /\b(?:src|href)=["\x27]([^"\x27]+)["\x27]/gi;
+              let attrMatch;
+              while ((attrMatch = attrRegex.exec(html)) !== null) {
+                const val = attrMatch[1].split("?")[0].split("#")[0];
+                if (!val || /^(https?:|mailto:|tel:|data:|javascript:)/i.test(val)) continue;
+                if (/\.(jpg|jpeg|png|svg|webp|gif|pdf)$/i.test(val)) {
+                  const target = path.resolve(dir, val);
+                  if (!fs.existsSync(target)) {
+                    throw new Error("Missing local asset referenced in " + rel + ": " + val);
+                  }
+                }
+              }
+            }
+
+            const requiredAssets = [
+              "donut-dash/course-map.jpg",
+              "donut-dash/DonutDash_EventDiagram.pdf",
+              "northstar-paws/assets/favicon.svg",
+              "northstar-paws/assets/og-image.jpg",
+              "northstar-paws/assets/sample-oil.jpg",
+              "northstar-paws/assets/sample-pop.jpg",
+              "northstar-paws/assets/sample-flat.jpg",
+              "command-center-ui/preview.png"
+            ];
+
+            for (const asset of requiredAssets) {
+              if (!fs.existsSync(asset) || fs.statSync(asset).size === 0) {
+                throw new Error("Missing or empty required asset: " + asset);
+              }
+              console.log("✓ Verified asset exists: " + asset);
+            }
+          '

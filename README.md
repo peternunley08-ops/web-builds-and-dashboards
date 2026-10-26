@@ -1,5 +1,7 @@
 # ⚡ Web Builds, Serverless Automations & Dashboards
 
+[![CI](https://github.com/peternunley08-ops/web-builds-and-dashboards/actions/workflows/ci.yml/badge.svg)](https://github.com/peternunley08-ops/web-builds-and-dashboards/actions/workflows/ci.yml)
+
 A curated monorepo of standalone web applications, community event platforms, serverless e-commerce pipelines, and privacy-first personal dashboards built by **Peter Nunley**.
 
 Every project in this repository is designed with **zero heavy frontend build requirements** — open any `index.html` directly in a browser or serve it statically via GitHub Pages / Netlify.
